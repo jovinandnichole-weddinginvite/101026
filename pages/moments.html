@@ -153,12 +153,18 @@ textarea:focus {
 
   transition: all 0.35s ease;
 }
-  .bottom-line {
-  margin-top: 40px;
+.bottom-line {
+  margin: 30px auto;         /* ✅ centers horizontally */
   border: none;
   height: 1px;
-  background: rgba(255, 255, 255, 0.3);
   width: 63%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  ); /* ✅ same elegant fade on both sides */
+}
 
 .nav-btn:hover {  
   transform: translateY(-4px) scale(1.03);
