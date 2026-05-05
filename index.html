@@ -165,12 +165,17 @@ document.querySelectorAll(".time-box span").forEach(el => {
   margin-bottom: 15px;
 }
 
-  .bottom-line {
-  margin-top: 40px;
+.bottom-line {
+  margin: 30px auto;         /* ✅ centers horizontally */
   border: none;
   height: 1px;
-  background: rgba(255, 255, 255, 0.3);
   width: 63%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  ); /* ✅ same elegant fade on both sides */
 }
   /* ✨ Transparent RSVP Fields (Glass Style) */
 input,
@@ -2009,7 +2014,7 @@ body * {
 
 <!-- 🎥 Background Video -->
 <video class="video-bg" autoplay muted loop playsinline>
-  <source src="../videos/AI.mp4" type="video/mp4">
+  <source src="videos/AI.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
 
