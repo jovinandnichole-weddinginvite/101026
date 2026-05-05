@@ -428,6 +428,7 @@ textarea:focus {
   font-size: 22px;
   color: #fb6f92;
   margin-bottom: 10px;
+  
 }
 
 
@@ -436,12 +437,14 @@ textarea:focus {
   width: 100%;
   margin-top: 16px;
   font-family: "Playfair Display", serif;
+  
 }
 
 .entourage-row {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
+  
 }
 
 .entourage-col {
@@ -913,16 +916,29 @@ i,
   50% { transform: translateY(-3px); }
 }
 
+/* 🚀 FORCE SAME ANIMATION FOR EVERYTHING */
+.invite * {
+  animation: none !important;     /* kills all old animations */
+}
+
+/* ✅ Only use reveal animation */
 .reveal {
   opacity: 0;
-  transform: translateY(30px) translateX(-8px);
-  transition: opacity 0.9s ease, transform 0.9s ease;
+  transform: translateY(40px) scale(0.97);
+  filter: blur(8px);
+  transition:
+    opacity 1.1s cubic-bezier(.22,1,.36,1),
+    transform 1.1s cubic-bezier(.22,1,.36,1),
+    filter 1.1s ease;
 }
 
 .reveal.active {
   opacity: 1;
-  transform: translateY(0) translateX(0);
+  transform: translateY(0) scale(1);
+  filter: blur(0);
 }
+
+
 .entourage-wrapper p {
   opacity: 0;
   transform: translateY(10px);
@@ -1134,9 +1150,9 @@ body {
 
 
 .invite {
-  background:
-background: rgba(255,255,255,0.08); /* very light glass */
-  max-width: 700px;
+ background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(5px);
   width: 100%;
   padding: 16px 20px;   /* reduce from 24px */
   border-radius: 22px;
@@ -1949,9 +1965,9 @@ strong {
 <div class="invite">
 
   <hr class="bottom-line">
-  <h1>Entourage</h1>
+  <h1 class="reveal">Entourage</h1>
 
-  <div class="entourage-wrapper">
+  <div class="entourage-wrapper reveal">
 
     <!-- Parents -->
     <div class="entourage-row">
@@ -1976,24 +1992,24 @@ strong {
 
 
 
-<p>Mrs. Judith & Dr. Angel Trinidad</p>
-<p>Mrs. Celia & Reynaldo Jr. Lazo</p>
-<p>Mrs. Magdalena & Mr. Samuel Lazo</p>
-<p>Dr. Maria Alioza & Mr. Pio Tiu</p>  
-<p>Mrs.Evangeline & Mr. Wenceslao Laygo</p>
-<p>Mrs. Lanie & Mr. James Laygo</p>
-<p>Mrs. Maribel & Mr. Marner Dacalan</p>
-<p>Mrs. Evangeline & Mr. Joe Pagarigan</p>
-<p>Mrs. Kulyana & Mr. Kulyan Kapitan</p>
-<p>Mrs. Leticia Laygo Belen</p>
-<p>Mrs. Rosemarie Lee</p>
-<p>Mrs. Marlyn L. See</p>
-<p>Mrs. Josephine Manganey</p>
-<p>Mrs. Mylene Cataya</p>
-<p>Ms. Emer Rubino</p>
-<p>Mr. Jeruel Agcaoili</p>
-<p>Mr. Rowald Rubino</p>
-<p>Mr. Ronald Rubino</p>
+<p class="reveal">Mrs. Judith & Dr. Angel Trinidad</p>
+<p class="reveal">Mrs. Celia & Reynaldo Jr. Lazo</p>
+<p class="reveal">Mrs. Magdalena & Mr. Samuel Lazo</p>
+<p class="reveal">Dr. Maria Alioza & Mr. Pio Tiu</p>  
+<p class="reveal">Mrs.Evangeline & Mr. Wenceslao Laygo</p>
+<p class="reveal">Mrs. Lanie & Mr. James Laygo</p>
+<p class="reveal">Mrs. Maribel & Mr. Marner Dacalan</p>
+<p class="reveal">Mrs. Evangeline & Mr. Joe Pagarigan</p>
+<p class="reveal">Mrs. Kulyana & Mr. Kulyan Kapitan</p>
+<p class="reveal">Mrs. Leticia Laygo Belen</p>
+<p class="reveal">Mrs. Rosemarie Lee</p>
+<p class="reveal">Mrs. Marlyn L. See</p>
+<p class="reveal">Mrs. Josephine Manganey</p>
+<p class="reveal">Mrs. Mylene Cataya</p>
+<p class="reveal">Ms. Emer Rubino</p>
+<p class="reveal">Mr. Jeruel Agcaoili</p>
+<p class="reveal">Mr. Rowald Rubino</p>
+<p class="reveal">Mr. Ronald Rubino</p>
 
 
 <br><br>
@@ -2113,37 +2129,38 @@ strong {
 
 
 <script>
-  const button = document.getElementById("toggleEntourage");
-  const content = document.getElementById("entourageContent");
-  const btnText = button.querySelector(".btn-text");
+document.addEventListener("DOMContentLoaded", () => {
 
-  content.style.overflow = "hidden";
-  content.style.maxHeight = "0";
+  const elements = document.querySelectorAll(
+    ".invite h1, .invite h2, .invite h3, .invite h4, \
+     .invite p, .invite div, .invite a, .invite span"
+  );
 
-  button.addEventListener("click", () => {
-    const isOpen = content.style.maxHeight !== "0px";
+  elements.forEach((el, index) => {
+    el.classList.add("reveal");
 
-    if (!isOpen) {
-      content.style.display = "block";
-      content.style.maxHeight = content.scrollHeight + "px";
-      button.classList.add("active");
-      btnText.textContent = "Hide Entourage";
-
-document.querySelectorAll('.entourage-wrapper p').forEach((p, i) => {
-  p.style.setProperty('--i', i);
-});
-
-
-    } else {
-      content.style.maxHeight = "0";
-      button.classList.remove("active");
-      btnText.textContent = "Entourage";
-    }
+    // ✅ smoother stagger
+    el.style.transitionDelay = `${index * 0.05}s`;
   });
-</script>
 
-</div> 
-  </div>
+  const reveals = document.querySelectorAll(".reveal");
+
+  function handleScroll() {
+    const trigger = window.innerHeight * 0.9;
+
+    reveals.forEach(el => {
+      const top = el.getBoundingClientRect().top;
+
+      if (top < trigger) {
+        el.classList.add("active");
+      }
+    });
+  }
+
+  window.addEventListener("scroll", handleScroll);
+  handleScroll();
+});
+</script>
 
 </body>
 </html>
