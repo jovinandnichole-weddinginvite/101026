@@ -1,9 +1,9 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Jovin & Nichole | Wedding Invitation</title>
 
 <!-- Google Font -->
@@ -13,6 +13,78 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
 
+
+<style>
+body {
+  margin:0;
+  font-family: Arial, sans-serif;
+  overflow:hidden;
+}
+
+/* INTRO SCREEN */
+.intro {
+  position:fixed;
+  inset:0;
+  background: linear-gradient(135deg,#f8cdda,#f5b2c3);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  color:white;
+  z-index:10;
+  transition:all 1s ease;
+}
+
+.intro.hide {
+  opacity:0;
+  transform:scale(1.2);
+  pointer-events:none;
+}
+
+.intro h1 {
+  font-size:40px;
+  margin-bottom:20px;
+}
+
+.open-btn {
+  padding:14px 30px;
+  border:none;
+  border-radius:30px;
+  font-size:16px;
+  cursor:pointer;
+  background:white;
+  color:#fb6f92;
+  box-shadow:0 10px 30px rgba(0,0,0,0.2);
+  transition:0.3s;
+}
+
+.open-btn:hover {
+  transform:scale(1.08);
+}
+
+/* CONTENT */
+.content {
+  opacity:0;
+  transition:opacity 1.2s ease;
+}
+
+.content.show {
+  opacity:1;
+}
+</style>
+</head>
+<body>
+
+<!-- INTRO -->
+<div class="intro" id="intro">
+  <h1>💌 You're Invited</h1>
+  <p>Tap to open your invitation</p>
+  <button class="open-btn" id="openBtn">Open Invitation</button>
+</div>
+
+<!-- MAIN INVITE CONTENT -->
+<div class="content" id="mainContent">
 
 
 <div class="invite">
@@ -165,7 +237,7 @@ document.querySelectorAll(".time-box span").forEach(el => {
   margin-bottom: 15px;
 }
 
-.bottom-line {
+ .bottom-line {
   margin: 30px auto;         /* ✅ centers horizontally */
   border: none;
   height: 1px;
@@ -176,6 +248,7 @@ document.querySelectorAll(".time-box span").forEach(el => {
     rgba(255, 255, 255, 0.5),
     transparent
   ); /* ✅ same elegant fade on both sides */
+}
 }
   /* ✨ Transparent RSVP Fields (Glass Style) */
 input,
@@ -2014,7 +2087,7 @@ body * {
 
 <!-- 🎥 Background Video -->
 <video class="video-bg" autoplay muted loop playsinline>
-  <source src="videos/AI.mp4" type="video/mp4">
+  <source src="../videos/AI.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
 
@@ -2220,6 +2293,22 @@ body * {
   });
 </script>
 
+<script>
+// Transition logic
+const intro = document.getElementById("intro");
+const btn = document.getElementById("openBtn");
+const content = document.getElementById("mainContent");
+
+btn.addEventListener("click", () => {
+  intro.classList.add("hide");
+  setTimeout(() => {
+    intro.style.display = "none";
+    content.classList.add("show");
+    document.body.style.overflow = "auto";
+  }, 800);      
+});
+</script>
+
 
 </div>
 
@@ -2236,3 +2325,4 @@ body * {
 
 
 </html>
+
