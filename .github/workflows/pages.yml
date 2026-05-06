@@ -1,0 +1,40 @@
+name: Deploy Static Site to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+# ✅ Fix Node.js 20 deprecation warning
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      # ✅ Step 1: Checkout repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # ✅ Step 2: Set up GitHub Pages
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v5
+
+      # ✅ Step 3: Upload your website files
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      # ✅ Step 4: Deploy live site
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
