@@ -280,30 +280,11 @@ transform-style: preserve-3d;
   inset: 0;
   background: url("images/monogram_circle.png") center/cover no-repeat;
   border-radius: 50%;
-  transition: transform 0.6s ease, opacity 0.5s ease;
+  transition: transform 2s ease, opacity 2s ease;
 }
 
-/* LEFT HALF */
-.seal-logo::before {
-  clip-path: polygon(0 0, 50% 0, 45% 100%, 0 100%);
-}
 
-/* RIGHT HALF */
-.seal-logo::after {
-  clip-path: polygon(55% 0, 100% 0, 100% 100%, 50% 100%);
-}
-.seal-logo::after,
-.seal-logo::before {
-  filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
-}
 
-.envelope.open .seal-logo {
-  animation: crackPop 0.3s ease;
-}
-
-@keyframes crackPop {
-  50% { transform: translate(-50%, -50%) scale(1.15); }
-}
 </style>
 </head>
 <body>
