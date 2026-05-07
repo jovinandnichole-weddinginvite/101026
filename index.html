@@ -33,12 +33,12 @@ body {
   text-align:center;
   color:white;
   z-index:10;
-  transition:all 1s ease;
+  transition: opacity 1s var(--smooth), transform 1s var(--smooth);
 }
 
 .intro.hide {
   opacity:0;
-  transform:scale(1.2);
+  transform:scale(1.08);
   pointer-events:none;
 }
 
@@ -56,7 +56,7 @@ body {
   background:white;
   color:#fb6f92;
   box-shadow:0 10px 30px rgba(0,0,0,0.2);
-  transition:0.3s;
+  transition:3s;
 }
 
 .open-btn:hover {
@@ -118,7 +118,7 @@ body {
   justify-content: center;
 
  transform: scale(0.8);
-  animation: envelopeIntro 0.8s ease forwards;
+  animation: floatEnvelope 4s var(--smooth) infinite;
 
 }
 
@@ -139,7 +139,7 @@ body {
   overflow: hidden;
 
 transform-style: preserve-3d;
-  transition: transform 0.25s ease-out;
+ transition: transform 0.7s var(--smooth);
 
   animation: floatEnvelope 3s ease-in-out infinite;
 }
@@ -167,7 +167,10 @@ transform-style: preserve-3d;
   background: #fb6f92;
   clip-path: polygon(0 0, 50% 50%, 100% 0);
   transform-origin: top;
-  transition: transform 0.6s ease;
+ 
+  transition: transform 5s var(--smooth);
+  backface-visibility: hidden;
+
   z-index: 2;
 }
 
@@ -182,7 +185,7 @@ transform-style: preserve-3d;
 /* 🎬 Animations */
 @keyframes floatEnvelope {
   0%,100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-10px); }
 }
 /* 💍 Monogram Seal */
 .seal-logo {
@@ -204,7 +207,11 @@ transform-style: preserve-3d;
   transform-origin: top center; /* ✅ important */
   z-index: 3;
 
-  transition: transform 0.6s ease, opacity 0.4s ease;
+  
+  transition:
+    transform 5s var(--smooth),
+    opacity 0.5s ease-out;
+
 
   box-shadow:
     0 4px 12px rgba(0,0,0,0.25),
@@ -244,7 +251,7 @@ transform-style: preserve-3d;
   text-align: center;
   opacity: 0;
 
-  transition: opacity 0.5s ease 0.3s;
+  transition: opacity 3s ease 3s, transform 3s var(--smooth);
 }
 
 /* ✅ KEEP IT CENTERED EVEN WHEN OPEN */
@@ -252,12 +259,13 @@ transform-style: preserve-3d;
   opacity: 1;
   transform: translate(-50%, -50%) scale(1.02);
   text-shadow: 0 0 10px rgba(251,111,146,0.4);
+  transition: opacity 3s ease 3s, transform 3s var(--smooth);
 }
 
 .envelope.open .seal-logo {
   animation: none; /* stop pulse */
-  transform: translate(-50%, -80%) rotateX(-180deg) scale(0.85);
-  opacity: 0;
+  transform: translate(-50%, -50%) scale(1.04);
+  opacity: 1;
 }
 .envelope.open .seal-logo::before {
   transform: translateX(-18px) rotate(-18deg);
@@ -285,23 +293,22 @@ transform-style: preserve-3d;
 
 /* 🌅 Page fade transition */
 body {
+  opacity: 0;
+  transition: opacity 1s var(--smooth), filter 1s var(--smooth);
+}
+
+body.loaded {
   opacity: 1;
-  transition: opacity 0.8s ease;
 }
 
 body.fade-out {
   opacity: 0;
-}
-body {
-  opacity: 0;
-  transition: opacity 0.8s ease;
-}
-body.fade-out {
-  opacity: 0;
-  filter: blur(6px);
+  filter: blur(8px);
 }
 
-
+:root {
+  --smooth: cubic-bezier(0.65, 0, 0.35, 1);
+}
 
 
 
@@ -337,24 +344,23 @@ body.fade-out {
 document.getElementById("openBtn").addEventListener("click", function () {
   const envelope = document.querySelector(".envelope");
 
-  // Play envelope opening
   envelope.classList.add("open");
 
-  // Start fade effect after animation
-  setTimeout(function () {
+  // Wait for flap animation to nearly finish
+  setTimeout(() => {
     document.body.classList.add("fade-out");
 
-    // Wait for fade, then go to next page
-    setTimeout(function () {
-      window.location.href = "indexx.html"; // 👈 change this
-    }, 800);
-  }, 700);
+    // Smooth transition to next page
+    setTimeout(() => {
+      window.location.href = "indexx.html";
+    }, 1000);
+  }, 900);
 });
-</script>
-<script>
+
 window.addEventListener("load", () => {
-  document.body.style.opacity = "1";
+  document.body.classList.add("loaded");
 });
+
 </script>
 
 
