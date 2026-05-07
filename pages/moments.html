@@ -761,7 +761,22 @@ textarea:focus {
 }
 
 
+/* ✅ SAME SIZE for VIDEO + PHOTOS */
+.gallery-item.video video,
+.slides img {
+  width: 100%;
+  height: 400px;        /* 🔥 SAME HEIGHT */
+  object-fit: cover;    /* ✅ crop nicely */
+  border-radius: 18px;
+}
 
+/* 📱 Mobile */
+@media (max-width: 480px) {
+  .gallery-item.video video,
+  .slides img {
+    height: 280px;   /* adjust for mobile */
+  }
+}
 
 body {
   color: #555;
@@ -1181,9 +1196,54 @@ body {
   background: rgba(0, 0, 0, 0.35);
   z-index: -2;
 }
+.gallery-slider {
+  width: 100%;
+}
 
+.slides img {
+  height: 60vh;  /* 🔥 responsive height based on screen */
+}
+@media (max-width: 480px) {
+  .slides img {
+    height: 300px;  /* bigger on phone */
+  }
+}
+.fullscreen-gallery {
+  position: fixed;
+  inset: 0;
+  background: black;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 999999;
+}
 
+.fullscreen-gallery.active {
+  display: flex;
+}
 
+.fullscreen-gallery img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+
+  animation: fadeZoom 0.8s ease;
+}
+``
+.slides img {
+  animation: cinematicFade 1.2s ease;
+}
+
+@keyframes cinematicFade {
+  from {
+    opacity: 0;
+    transform: scale(1.1);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 .invite {
   background:
 background: rgba(255,255,255,0.08); /* very light glass */
@@ -1942,13 +2002,54 @@ body * {
 .dot.active {
   background: #fb6f92;
 }
+/* =========================
+   📸 SLIDER GALLERY
+   ========================= */
+
+.gallery-slider {
+  position: relative;
+  overflow: hidden;
+  border-radius: 18px;
+}
+
+.slides {
+  display: flex;
+  transition: transform 1s cubic-bezier(0.77, 0, 0.175, 1); /* cinematic */
+}
+
+.slides img {
+  min-width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 18px;
+
+  /* NEW */
+  transform: scale(0.95);
+  opacity: 0.6;
+  transition: all 0.8s ease;
+}
+
+/* Active slide (center focus) */
+.slides img.active {
+  transform: scale(1.05);
+  opacity: 1;
+}
+
+
+
+
+.slide-prev:hover,
+.slide-next:hover {
+  background: rgba(251,111,146,0.8);
+}
+
+.slide-prev { left: 10px; }
+.slide-next { right: 10px; }
+.slides img {
+  animation: fadeZoom 4s ease;
+}
+
 </style>
-
-
-
-
-
-
 
 
 
@@ -1985,14 +2086,18 @@ body * {
   </div>
 
   <!-- PHOTOS -->
-  <div class="gallery-grid">
-    <img src="../images/1.jpeg" alt="moment 1">
-    <img src="../images/2.jpeg" alt="moment 2">
-    <img src="../images/3.jpeg" alt="moment 3">
-    <img src="../images/4.jpeg" alt="moment 4">
-    <img src="../images/5.jpeg" alt="moment 5">
-    <img src="../images/6.jpeg" alt="moment 6">
+<div class="gallery-slider">
+  <div class="slides">
+    <img src="../images/1.jpeg">
+    <img src="../images/2.jpeg">
+    <img src="../images/3.jpeg">
+    <img src="../images/4.jpeg">
+    <img src="../images/5.jpeg">
+    <img src="../images/6.jpeg">
   </div>
+
+
+</div>
 <!-- 📸 SLIDESHOW MODAL -->
 <div id="slideshowModal" class="slideshow-modal">
   <span class="close-btn">&times;</span>
@@ -2000,10 +2105,12 @@ body * {
   <div class="slideshow-container">
     <img id="slideImage" src="" alt="slide">
 
-    <!-- Arrows -->
-    <button class="prev">&#10094;</button>
-    <button class="next">&#10095;</button>
+
   </div>
+
+<div id="fullscreenGallery" class="fullscreen-gallery">
+  <img id="fullscreenImg" src="">
+</div>
 
   <!-- Dots -->
   <div class="dots-container"></div>
@@ -2037,15 +2144,71 @@ body * {
 </script>
 
   <div>
+<script>
+const slides = document.querySelector(".slides");
+const slideImages = document.querySelectorAll(".slides img");
 
+let index = 0;
+let autoPlay;
+
+/* Show slide */
+function updateSlide() {
+  slides.style.transform = `translateX(-${index * 100}%)`;
+
+  
+ slideImages.forEach(img => img.classList.remove("active"));
+  slideImages[index].classList.add("active");
+
+}
+
+
+
+/* Auto slide */
+function startAuto() {
+  autoPlay = setInterval(() => {
+    index++;
+    if (index >= slideImages.length) index = 0;
+    updateSlide();
+  }, 3000);
+}
+
+function stopAuto() {
+  clearInterval(autoPlay);
+}
+
+/* Start automatically */
+startAuto();
+
+/* Pause on hover */
+const slider = document.querySelector(".gallery-slider");
+
+slider.addEventListener("click", () => {
+  openFullscreen(index);
+});
+
+slider.addEventListener("mouseenter", stopAuto);
+slider.addEventListener("mouseleave", startAuto);
+
+/* Swipe support */
+let startX = 0;
+
+slider.addEventListener("touchstart", e => {
+  startX = e.touches[0].clientX;
+});
+
+slider.addEventListener("touchend", e => {
+  const endX = e.changedTouches[0].clientX;
+
+  if (startX - endX > 50) nextBtn.click();
+  if (endX - startX > 50) prevBtn.click();
+});
+</script>
 
 <script>
 const images = document.querySelectorAll(".gallery-grid img");
 const modal = document.getElementById("slideshowModal");
 const slideImg = document.getElementById("slideImage");
 const closeBtn = document.querySelector(".close-btn");
-const nextBtn = document.querySelector(".next");
-const prevBtn = document.querySelector(".prev");
 const dotsContainer = document.querySelector(".dots-container");
 
 let currentIndex = 0;
@@ -2083,9 +2246,7 @@ function showSlide(index) {
   dots[currentIndex].classList.add("active");
 }
 
-/* Next / Prev */
-nextBtn.onclick = () => showSlide(currentIndex + 1);
-prevBtn.onclick = () => showSlide(currentIndex - 1);
+
 
 /* Auto slide */
 function startAutoSlide() {
@@ -2123,7 +2284,44 @@ modal.addEventListener("mouseenter", stopAutoSlide);
 modal.addEventListener("mouseleave", startAutoSlide);
 </script>
 
+<script>
+const fullscreen = document.getElementById("fullscreenGallery");
+const fullscreenImg = document.getElementById("fullscreenImg");
 
+function openFullscreen(i) {
+  index = i;
+  fullscreen.classList.add("active");
+  updateFullscreen();
+}
+
+function updateFullscreen() {
+  fullscreenImg.src = slideImages[index].src;
+}
+
+/* Close on tap */
+fullscreen.addEventListener("click", () => {
+  fullscreen.classList.remove("active");
+});
+
+/* Swipe */
+let fsStartX = 0;
+
+fullscreen.addEventListener("touchstart", e => {
+  fsStartX = e.touches[0].clientX;
+});
+
+fullscreen.addEventListener("touchend", e => {
+  let endX = e.changedTouches[0].clientX;
+
+  if (fsStartX - endX > 50) index++;
+  if (endX - fsStartX > 50) index--;
+
+  if (index >= slideImages.length) index = 0;
+  if (index < 0) index = slideImages.length - 1;
+
+  updateFullscreen();
+});
+</script>
 
 </body>
 </html>
