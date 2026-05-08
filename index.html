@@ -998,7 +998,22 @@ i,
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
+.thankyou {
+  font-family: "Playfair Display", serif;
+  font-size: 15px;
+  line-height: 1.6;
+  color: #f5d0d6;
+  text-align: center;
+  padding: 14px;
+  border-radius: 18px;
 
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+
+  border: 1px solid rgba(255,255,255,0.25);
+
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
 
 /* 💎 LUXURY SUBMIT BUTTON */
 #submitBtn {
@@ -2200,12 +2215,10 @@ body * {
   
 <div>
 <h3>GUEST RSVP</h3>
-  <form
-    action="https://formspree.io/f/xykblldw"
-    method="POST"
+ <form id="rsvpForm">
 
     
-  >
+  
     <input type="text" name="name" required placeholder="Full Name">
 
     <select name="guests" id="guests" required>
@@ -2245,7 +2258,56 @@ body * {
   <option value="Cannot Attend">Sorry, I can’t attend</option>
 </select>
 
+<script>
+const form = document.getElementById("rsvpForm");
 
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const formData = {
+    name: form.name.value,
+    guests: form.guests.value,
+    extra_guest_name: form.extra_guest_name.value,
+    email: form.email.value,
+    phone: form.phone.value,
+    attending: form.attending.value,
+    message: form.message.value
+  };
+
+  await fetch("https://script.google.com/macros/s/AKfycbz-onXJI-35-khm9fAchGhTn3fgy43l0h657WVgPiHEp9oU8pYtUZwo0nxcbmBlX1Id/exec", {
+    method: "POST",
+    body: JSON.stringify(formData)
+  });
+
+  submitBtn.textContent = "✅ RSVP Submitted";
+
+
+
+let responseMessage = "";
+
+if (formData.attending === "Will Attend") {
+  responseMessage = `
+    <p class='thankyou'>
+      We’re so excited that you’ll be joining us!<br>
+      Your RSVP has been confirmed, and we can’t wait to celebrate together on October 10, 2026.
+    </p>
+  `;
+} else {
+  responseMessage = `
+    <p class='thankyou'>
+      Thank you for letting us know. We’ll miss having you with us on our special day, but we truly appreciate your response and support.
+    </p>
+  `;
+}
+
+form.innerHTML = responseMessage;
+
+
+
+
+  form.reset();
+});
+</script>
 <script>
   const guestsSelect = document.getElementById("guests");
   const extraGuestField = document.getElementById("extraGuestField");
@@ -2258,7 +2320,18 @@ body * {
     }
   });
 </script>
+<script>
+const alreadySubmitted = localStorage.getItem("rsvpSubmitted");
 
+if (alreadySubmitted) {
+  document.getElementById("submitBtn").disabled = true;
+  document.getElementById("submitBtn").textContent = "✅ Already Submitted";
+}
+
+form.addEventListener("submit", () => {
+  localStorage.setItem("rsvpSubmitted", "true");
+});
+</script>
 
 
     <textarea name="message" placeholder="Message (optional)"></textarea>
