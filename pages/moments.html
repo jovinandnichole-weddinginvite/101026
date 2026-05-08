@@ -16,10 +16,13 @@
 <style>
 
 h1 {
-  font-size: 50px;
- 
+  font-size: clamp(28px, 6vw, 50px);
+  margin: 20px 0;
+  text-align: center;
 }
-
+.moments-gallery {
+  margin-top: 20px;
+}
 h4 {
   font-size: 25px;
   font-family: "Cormorant Garamond", serif;
@@ -92,7 +95,7 @@ h1, h4 {
     0 6px 18px rgba(0,0,0,0.15);
 
   transition: all 0.3s ease;
-}
+
   select {
   appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg fill='%23fb6f92' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
@@ -205,7 +208,7 @@ textarea:focus {
     transform: translateY(0) scale(1);
   }
 }
-``
+
 
 /* 🌸 Float motion */
 @keyframes iconFloat {
@@ -1199,6 +1202,15 @@ body {
 .gallery-slider {
   width: 100%;
 }
+@media (max-width: 480px) {
+  h1 {
+    margin-top: 30px;
+    margin-bottom: 15px;
+  }
+}
+.invite {
+  padding-top: 20px;
+}
 
 .slides img {
   height: 60vh;  /* 🔥 responsive height based on screen */
@@ -1229,7 +1241,7 @@ body {
 
   animation: fadeZoom 0.8s ease;
 }
-``
+
 .slides img {
   animation: cinematicFade 1.2s ease;
 }
@@ -2049,6 +2061,10 @@ body * {
   animation: fadeZoom 4s ease;
 }
 
+
+.fullscreen-gallery.active img {
+  animation: fadeZoom 0.5s ease;
+}
 </style>
 
 
@@ -2097,24 +2113,6 @@ body * {
   </div>
 
 
-</div>
-<!-- 📸 SLIDESHOW MODAL -->
-<div id="slideshowModal" class="slideshow-modal">
-  <span class="close-btn">&times;</span>
-
-  <div class="slideshow-container">
-    <img id="slideImage" src="" alt="slide">
-
-
-  </div>
-
-<div id="fullscreenGallery" class="fullscreen-gallery">
-  <img id="fullscreenImg" src="">
-</div>
-
-  <!-- Dots -->
-  <div class="dots-container"></div>
-</div>
 </div>
 
 
@@ -2182,9 +2180,7 @@ startAuto();
 /* Pause on hover */
 const slider = document.querySelector(".gallery-slider");
 
-slider.addEventListener("click", () => {
-  openFullscreen(index);
-});
+
 
 slider.addEventListener("mouseenter", stopAuto);
 slider.addEventListener("mouseleave", startAuto);
@@ -2205,12 +2201,11 @@ slider.addEventListener("touchend", e => {
 </script>
 
 <script>
-const images = document.querySelectorAll(".gallery-grid img");
 const modal = document.getElementById("slideshowModal");
 const slideImg = document.getElementById("slideImage");
 const closeBtn = document.querySelector(".close-btn");
 const dotsContainer = document.querySelector(".dots-container");
-
+const images = document.querySelectorAll(".slides img");
 let currentIndex = 0;
 let autoSlide;
 
@@ -2284,26 +2279,48 @@ modal.addEventListener("mouseenter", stopAutoSlide);
 modal.addEventListener("mouseleave", startAutoSlide);
 </script>
 
-<script>
-const fullscreen = document.getElementById("fullscreenGallery");
+<script>const fullscreen = document.getElementById("fullscreenGallery");
 const fullscreenImg = document.getElementById("fullscreenImg");
 
-function openFullscreen(i) {
-  index = i;
-  fullscreen.classList.add("active");
-  updateFullscreen();
-}
+let fullscreenIndex = 0;
+let fsAuto;
 
-function updateFullscreen() {
-  fullscreenImg.src = slideImages[index].src;
-}
-
-/* Close on tap */
-fullscreen.addEventListener("click", () => {
-  fullscreen.classList.remove("active");
+/* OPEN FULLSCREEN */
+slideImages.forEach((img, i) => {
+  img.addEventListener("click", () => {
+    fullscreenIndex = i;
+    fullscreen.classList.add("active");
+    updateFullscreen();
+    startFullscreenAuto();
+  });
 });
 
-/* Swipe */
+/* UPDATE */
+function updateFullscreen() {
+  fullscreenImg.src = slideImages[fullscreenIndex].src;
+}
+
+/* AUTO PLAY (slideshow inside fullscreen) */
+function startFullscreenAuto() {
+  stopFullscreenAuto();
+  fsAuto = setInterval(() => {
+    fullscreenIndex++;
+    if (fullscreenIndex >= slideImages.length) fullscreenIndex = 0;
+    updateFullscreen();
+  }, 3000);
+}
+
+function stopFullscreenAuto() {
+  clearInterval(fsAuto);
+}
+
+/* CLOSE */
+fullscreen.addEventListener("click", () => {
+  fullscreen.classList.remove("active");
+  stopFullscreenAuto();
+});
+
+/* SWIPE */
 let fsStartX = 0;
 
 fullscreen.addEventListener("touchstart", e => {
@@ -2313,11 +2330,11 @@ fullscreen.addEventListener("touchstart", e => {
 fullscreen.addEventListener("touchend", e => {
   let endX = e.changedTouches[0].clientX;
 
-  if (fsStartX - endX > 50) index++;
-  if (endX - fsStartX > 50) index--;
+  if (fsStartX - endX > 50) fullscreenIndex++;
+  if (endX - fsStartX > 50) fullscreenIndex--;
 
-  if (index >= slideImages.length) index = 0;
-  if (index < 0) index = slideImages.length - 1;
+  if (fullscreenIndex >= slideImages.length) fullscreenIndex = 0;
+  if (fullscreenIndex < 0) fullscreenIndex = slideImages.length - 1;
 
   updateFullscreen();
 });
