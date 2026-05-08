@@ -754,7 +754,10 @@ body {
   color: #555;
 }
 
-
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
 
 i,
 .fa-solid,
@@ -1838,10 +1841,8 @@ body.reveal-content .invite {
   color: #fb6f92;
 }
 
-/* 💖 FORCE ALL TEXT TO #f5b2c3 */
-body,
-body * {
-  color: #f5b2c3 !important;
+.invite {
+  color: #f5b2c3;
 }
 
 /* =========================
@@ -1932,17 +1933,25 @@ body * {
 
 
 
-
-
-
-
-
-
-
 h1 {
-  font-size: 50px;
- 
+  font-family: "Cormorant Garamond", serif;
+  font-size: 44px;
+  color: #f5b2c3;
+  margin: 50px 0 8px;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.25);
 }
+
+
+
+@media (max-width: 430px) {
+  h1 {
+    font-size: 36px;
+  }
+}
+
+
+
+
 
 h4 {
   font-size: 25px;
