@@ -561,24 +561,28 @@ font-family: "Great Vibes", cursive;
   }
 }
 
-/* Keep invite content above sparkles */
-.invite {
-  width: 700px;     /* lock width */
-  max-width: 700px; /* prevents scaling */
+.scale-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 
+.invite {
+  width: 700px; /* your original desktop design */
+  transform-origin: top center;
+}
+
+/* ✅ AUTO SCALE for ANY phone */
 @media (max-width: 700px) {
   .invite {
-    transform: scale(0.85);
-    transform-origin: top center;
+    transform: scale(calc(100vw / 700));
   }
 }
 
 
-body {
-  min-width: 700px;
-  overflow-x: auto;
-}
+
+
+
 
 .entourage-toggle-wrapper {
   display: flex;
@@ -1902,7 +1906,7 @@ h1, h4 {
 <!-- Optional dark overlay -->
 <div class="video-overlay"></div>
 
-
+<div class="scale-wrapper">
 <div class="invite">
   <hr class="bottom-line">
   <h1>FINER DETAILS</h1>
@@ -1947,5 +1951,6 @@ h1, h4 {
     <i class=""></i> Back to Home
   </a>
 <hr class="bottom-line">
+</div>
 </body>
 </html>
