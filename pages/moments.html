@@ -14,6 +14,28 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
+  .nav-controls {
+  position: absolute;
+  bottom: 30px;
+  display: flex;
+  gap: 20px;
+}
+
+.nav-btn-modal {
+  padding: 10px 18px;
+  border-radius: 20px;
+  border: none;
+  background: rgba(255,255,255,0.15);
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+  transition: all 0.3s ease;
+}
+
+.nav-btn-modal:hover {
+  background: rgba(251,111,146,0.8);
+}
 .gallery-grid img,
 .slides img,
 video {
@@ -2069,6 +2091,22 @@ body * {
 .fullscreen-gallery.active img {
   animation: fadeZoom 0.5s ease;
 }
+
+.close-fullscreen {
+  position: absolute;
+  top: 20px;
+  right: 25px;
+  font-size: 34px;
+  color: #fff;
+  cursor: pointer;
+  z-index: 100000;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.close-fullscreen:hover {
+  transform: scale(1.2);
+  opacity: 0.8;
+}
 </style>
 
 
@@ -2125,8 +2163,18 @@ body * {
 </div>
 
 <hr class="bottom-line">
+
 <div id="fullscreenGallery" class="fullscreen-gallery">
+  <span id="closeFullscreen" class="close-fullscreen">&times;</span>
   <img id="fullscreenImg">
+
+
+ <div class="nav-controls">
+    <button onclick="prevSlide()" class="nav-btn-modal">⟵</button>
+    <button onclick="nextSlide()" class="nav-btn-modal">⟶</button>
+  </div>
+
+
 </div>
 
 <script>
@@ -2149,45 +2197,16 @@ body * {
   <div>
 
 
-
 <script>
 const fullscreen = document.getElementById("fullscreenGallery");
 const fullscreenImg = document.getElementById("fullscreenImg");
+const closeBtn = document.getElementById("closeFullscreen");
 
 const slideImages = document.querySelectorAll(".slides img");
+
 let fullscreenIndex = 0;
 
-
-let lastTap = 0;
-
-fullscreen.addEventListener("touchend", (e) => {
-  const now = new Date().getTime();
-  const tapLength = now - lastTap;
-
-  if (tapLength < 300 && tapLength > 0) {
-    fullscreen.classList.remove("active");
-    return;
-  }
-
-  lastTap = now;
-
-  const touch = e.changedTouches[0].clientX;
-
-  if (touch < window.innerWidth / 2) {
-    fullscreenIndex--;
-  } else {
-    fullscreenIndex++;
-  }
-
-  if (fullscreenIndex >= slideImages.length) fullscreenIndex = 0;
-  if (fullscreenIndex < 0) fullscreenIndex = slideImages.length - 1;
-
-  updateFullscreen();
-});
-
-
-
-/* OPEN FULLSCREEN */
+/* ✅ OPEN */
 slideImages.forEach((img, i) => {
   img.addEventListener("click", () => {
     fullscreenIndex = i;
@@ -2196,30 +2215,63 @@ slideImages.forEach((img, i) => {
   });
 });
 
-/* UPDATE IMAGE */
+/* ✅ UPDATE */
 function updateFullscreen() {
   fullscreenImg.src = slideImages[fullscreenIndex].src;
 }
 
-/* CLOSE (tap anywhere) */
-fullscreen.addEventListener("click", (e) => {
-  if (e.target.id === "fullscreenGallery") {
-    fullscreen.classList.remove("active");
+/* ✅ NAVIGATION FUNCTIONS */
+function nextSlide() {
+  fullscreenIndex = (fullscreenIndex + 1) % slideImages.length;
+  updateFullscreen();
+}
+
+function prevSlide() {
+  fullscreenIndex = (fullscreenIndex - 1 + slideImages.length) % slideImages.length;
+  updateFullscreen();
+}
+
+/* ✅ CLOSE */
+closeBtn.addEventListener("click", () => {
+  fullscreen.classList.remove("active");
+});
+
+/* ✅ ESC */
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") fullscreen.classList.remove("active");
+});
+
+/* ✅ SWIPE FIX (REAL SWIPE) */
+let touchStartX = 0;
+
+fullscreen.addEventListener("touchstart", (e) => {
+  touchStartX = e.touches[0].clientX;
+});
+
+fullscreen.addEventListener("touchend", (e) => {
+  let touchEndX = e.changedTouches[0].clientX;
+  let diff = touchStartX - touchEndX;
+
+  if (Math.abs(diff) > 50) {  // ✅ threshold prevents accidental taps
+    if (diff > 0) {
+      nextSlide();   // swipe left
+    } else {
+      prevSlide();   // swipe right
+    }
   }
 });
-fullscreen.addEventListener("touchend", (e) => {
-  const touch = e.changedTouches[0].clientX;
 
-  if (touch < window.innerWidth / 2) {
-    fullscreenIndex--;
-  } else {
-    fullscreenIndex++;
+/* ✅ CLICK LEFT / RIGHT (desktop support) */
+fullscreen.addEventListener("click", (e) => {
+  if (e.target === fullscreenImg) {
+    const clickX = e.clientX;
+
+    if (clickX < window.innerWidth / 2) {
+      prevSlide();
+    } else {
+      nextSlide();
+    }
   }
-
-  if (fullscreenIndex >= slideImages.length) fullscreenIndex = 0;
-  if (fullscreenIndex < 0) fullscreenIndex = slideImages.length - 1;
-
-  updateFullscreen();
 });
 </script>
 
@@ -2242,7 +2294,6 @@ window.addEventListener("load", () => {
   });
 });
 </script>
-
 
 </body>
 </html>
