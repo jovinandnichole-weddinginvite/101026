@@ -65,24 +65,10 @@
 }
 
 
-  /* ✅ Transparent look */
+.some-class {
   background: rgba(255,255,255,0.08);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-
-  color: #fb6f92;
-
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.4),
-    0 6px 18px rgba(0,0,0,0.15);
-
-  transition: all 0.3s ease;
-}
-  select {
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg fill='%23fb6f92' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
 }
 
 input:focus,
@@ -747,6 +733,27 @@ textarea:focus {
   transform: scale(1.05);
 }
 
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+h1 {
+  font-size: clamp(28px, 6vw, 44px);
+}
+
+.invite p {
+  line-height: 1.6;
+}
+
+.invite h4 {
+  line-height: 1.3;
+}
+
+@media (max-width: 480px) {
+  .invite {
+    padding: 14px 16px;
+  }
+}
 
 
 
@@ -1172,14 +1179,24 @@ body {
   z-index: -2;
 }
 
+@media (max-width: 480px) {
+  .invite {
+    padding: 14px 16px;
+  }
+}
+.invite p {
+  line-height: 1.6;
+}
 
+.invite h4 {
+  line-height: 1.3;
+}
 
 .invite {
   background:
 background: rgba(255,255,255,0.08); /* very light glass */
   max-width: 700px;
   width: 100%;
-  padding: 16px 20px;   /* reduce from 24px */
   border-radius: 22px;
   box-shadow: 0 15px 40px rgba(0,0,0,.1);
   text-align: center;
@@ -1801,7 +1818,6 @@ button:hover {
 
 
 
-}
 /* ===============================
    ✨ BODY REVEAL AFTER INTRO
    =============================== */
@@ -1939,6 +1955,7 @@ h1 {
   color: #f5b2c3;
   margin: 50px 0 8px;
   text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  font-size: clamp(28px, 6vw, 44px);
 }
 
 
@@ -1949,7 +1966,9 @@ h1 {
   }
 }
 
-
+html {
+  -webkit-text-size-adjust: 100%;
+}
 
 
 
