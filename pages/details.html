@@ -17,9 +17,12 @@
 
 <style>
 
+body {
+  min-width; /* matches your .invite max-width */
+}
 
 
-.bottom-line {
+ .bottom-line {
   margin: 30px auto;         /* ✅ centers horizontally */
   border: none;
   height: 1px;
@@ -30,6 +33,7 @@
     rgba(255, 255, 255, 0.5),
     transparent
   ); /* ✅ same elegant fade on both sides */
+}
 }
   /* ✨ Transparent RSVP Fields (Glass Style) */
 input,
@@ -559,8 +563,21 @@ font-family: "Great Vibes", cursive;
 
 /* Keep invite content above sparkles */
 .invite {
-  position: relative;
-  z-index: 2;
+  width: 700px;     /* lock width */
+  max-width: 700px; /* prevents scaling */
+}
+
+@media (max-width: 700px) {
+  .invite {
+    transform: scale(0.85);
+    transform-origin: top center;
+  }
+}
+
+
+body {
+  min-width: 700px;
+  overflow-x: auto;
 }
 
 .entourage-toggle-wrapper {
@@ -1926,7 +1943,7 @@ h1, h4 {
  <p>#NIKKIligsapagibigniNIÑO</p><br>
 
 <div class="nav-buttons">
-    <a href="../index.html" class="nav-btn">
+    <a href="../indexx.html" class="nav-btn">
     <i class=""></i> Back to Home
   </a>
 <hr class="bottom-line">
