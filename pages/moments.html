@@ -14,7 +14,11 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-
+.gallery-grid img,
+.slides img,
+video {
+  cursor: pointer;
+}
 h1 {
   font-size: clamp(28px, 6vw, 50px);
   margin: 20px 0;
@@ -2095,21 +2099,20 @@ body * {
 
   <!-- VIDEO -->
   <div class="gallery-item video">
-    <video controls poster="../images/gallery-cover.jpg">
-      <source src="../videos/moments.mp4" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
+    <video id="mainVideo" autoplay muted loop playsinline controls>
+  <source src="../videos/moments.mp4" type="video/mp4">
+</video>
   </div>
 
   <!-- PHOTOS -->
 <div class="gallery-slider">
   <div class="slides">
-    <img src="../images/1.jpeg">
-    <img src="../images/2.jpeg">
-    <img src="../images/3.jpeg">
-    <img src="../images/4.jpeg">
-    <img src="../images/5.jpeg">
-    <img src="../images/6.jpeg">
+    <img src="../images/1.jpeg"alt="">
+    <img src="../images/2.jpeg"alt="">
+    <img src="../images/3.jpeg"alt="">
+    <img src="../images/4.jpeg"alt="">
+    <img src="../images/5.jpeg"alt="">
+    <img src="../images/6.jpeg"alt="">
   </div>
 
 
@@ -2122,7 +2125,9 @@ body * {
 </div>
 
 <hr class="bottom-line">
-
+<div id="fullscreenGallery" class="fullscreen-gallery">
+  <img id="fullscreenImg">
+</div>
 
 <script>
   const venueLinks = document.querySelectorAll(".venue-link");
@@ -2142,148 +2147,45 @@ body * {
 </script>
 
   <div>
-<script>
-const slides = document.querySelector(".slides");
-const slideImages = document.querySelectorAll(".slides img");
-
-let index = 0;
-let autoPlay;
-
-/* Show slide */
-function updateSlide() {
-  slides.style.transform = `translateX(-${index * 100}%)`;
-
-  
- slideImages.forEach(img => img.classList.remove("active"));
-  slideImages[index].classList.add("active");
-
-}
 
 
-
-/* Auto slide */
-function startAuto() {
-  autoPlay = setInterval(() => {
-    index++;
-    if (index >= slideImages.length) index = 0;
-    updateSlide();
-  }, 3000);
-}
-
-function stopAuto() {
-  clearInterval(autoPlay);
-}
-
-/* Start automatically */
-startAuto();
-
-/* Pause on hover */
-const slider = document.querySelector(".gallery-slider");
-
-
-
-slider.addEventListener("mouseenter", stopAuto);
-slider.addEventListener("mouseleave", startAuto);
-
-/* Swipe support */
-let startX = 0;
-
-slider.addEventListener("touchstart", e => {
-  startX = e.touches[0].clientX;
-});
-
-slider.addEventListener("touchend", e => {
-  const endX = e.changedTouches[0].clientX;
-
-  if (startX - endX > 50) nextBtn.click();
-  if (endX - startX > 50) prevBtn.click();
-});
-</script>
 
 <script>
-const modal = document.getElementById("slideshowModal");
-const slideImg = document.getElementById("slideImage");
-const closeBtn = document.querySelector(".close-btn");
-const dotsContainer = document.querySelector(".dots-container");
-const images = document.querySelectorAll(".slides img");
-let currentIndex = 0;
-let autoSlide;
-
-/* Create dots */
-images.forEach((_, i) => {
-  const dot = document.createElement("span");
-  dot.classList.add("dot");
-  dot.addEventListener("click", () => showSlide(i));
-  dotsContainer.appendChild(dot);
-});
-
-const dots = document.querySelectorAll(".dot");
-
-/* Open slideshow */
-images.forEach((img, i) => {
-  img.addEventListener("click", () => {
-    modal.classList.add("active");
-    showSlide(i);
-    startAutoSlide();
-  });
-});
-
-/* Show slide */
-function showSlide(index) {
-  currentIndex = index;
-
-  if (currentIndex >= images.length) currentIndex = 0;
-  if (currentIndex < 0) currentIndex = images.length - 1;
-
-  slideImg.src = images[currentIndex].src;
-
-  dots.forEach(dot => dot.classList.remove("active"));
-  dots[currentIndex].classList.add("active");
-}
-
-
-
-/* Auto slide */
-function startAutoSlide() {
-  stopAutoSlide();
-  autoSlide = setInterval(() => {
-    showSlide(currentIndex + 1);
-  }, 3000);
-}
-
-function stopAutoSlide() {
-  clearInterval(autoSlide);
-}
-
-/* Close */
-closeBtn.onclick = () => {
-  modal.classList.remove("active");
-  stopAutoSlide();
-};
-
-/* Swipe support */
-let startX = 0;
-modal.addEventListener("touchstart", e => {
-  startX = e.touches[0].clientX;
-});
-
-modal.addEventListener("touchend", e => {
-  let endX = e.changedTouches[0].clientX;
-
-  if (startX - endX > 50) showSlide(currentIndex + 1);
-  if (endX - startX > 50) showSlide(currentIndex - 1);
-});
-
-/* Pause on hover (desktop) */
-modal.addEventListener("mouseenter", stopAutoSlide);
-modal.addEventListener("mouseleave", startAutoSlide);
-</script>
-
-<script>const fullscreen = document.getElementById("fullscreenGallery");
+const fullscreen = document.getElementById("fullscreenGallery");
 const fullscreenImg = document.getElementById("fullscreenImg");
 
+const slideImages = document.querySelectorAll(".slides img");
 let fullscreenIndex = 0;
-let fsAuto;
+
+
+let lastTap = 0;
+
+fullscreen.addEventListener("touchend", (e) => {
+  const now = new Date().getTime();
+  const tapLength = now - lastTap;
+
+  if (tapLength < 300 && tapLength > 0) {
+    fullscreen.classList.remove("active");
+    return;
+  }
+
+  lastTap = now;
+
+  const touch = e.changedTouches[0].clientX;
+
+  if (touch < window.innerWidth / 2) {
+    fullscreenIndex--;
+  } else {
+    fullscreenIndex++;
+  }
+
+  if (fullscreenIndex >= slideImages.length) fullscreenIndex = 0;
+  if (fullscreenIndex < 0) fullscreenIndex = slideImages.length - 1;
+
+  updateFullscreen();
+});
+
+
 
 /* OPEN FULLSCREEN */
 slideImages.forEach((img, i) => {
@@ -2291,47 +2193,28 @@ slideImages.forEach((img, i) => {
     fullscreenIndex = i;
     fullscreen.classList.add("active");
     updateFullscreen();
-    startFullscreenAuto();
   });
 });
 
-/* UPDATE */
+/* UPDATE IMAGE */
 function updateFullscreen() {
   fullscreenImg.src = slideImages[fullscreenIndex].src;
 }
 
-/* AUTO PLAY (slideshow inside fullscreen) */
-function startFullscreenAuto() {
-  stopFullscreenAuto();
-  fsAuto = setInterval(() => {
+/* CLOSE (tap anywhere) */
+fullscreen.addEventListener("click", (e) => {
+  if (e.target.id === "fullscreenGallery") {
+    fullscreen.classList.remove("active");
+  }
+});
+fullscreen.addEventListener("touchend", (e) => {
+  const touch = e.changedTouches[0].clientX;
+
+  if (touch < window.innerWidth / 2) {
+    fullscreenIndex--;
+  } else {
     fullscreenIndex++;
-    if (fullscreenIndex >= slideImages.length) fullscreenIndex = 0;
-    updateFullscreen();
-  }, 3000);
-}
-
-function stopFullscreenAuto() {
-  clearInterval(fsAuto);
-}
-
-/* CLOSE */
-fullscreen.addEventListener("click", () => {
-  fullscreen.classList.remove("active");
-  stopFullscreenAuto();
-});
-
-/* SWIPE */
-let fsStartX = 0;
-
-fullscreen.addEventListener("touchstart", e => {
-  fsStartX = e.touches[0].clientX;
-});
-
-fullscreen.addEventListener("touchend", e => {
-  let endX = e.changedTouches[0].clientX;
-
-  if (fsStartX - endX > 50) fullscreenIndex++;
-  if (endX - fsStartX > 50) fullscreenIndex--;
+  }
 
   if (fullscreenIndex >= slideImages.length) fullscreenIndex = 0;
   if (fullscreenIndex < 0) fullscreenIndex = slideImages.length - 1;
@@ -2339,6 +2222,27 @@ fullscreen.addEventListener("touchend", e => {
   updateFullscreen();
 });
 </script>
+
+<script>
+const mainVideo = document.getElementById("mainVideo");
+
+mainVideo.addEventListener("click", () => {
+  if (mainVideo.requestFullscreen) {
+    mainVideo.requestFullscreen();
+  } else if (mainVideo.webkitRequestFullscreen) {
+    mainVideo.webkitRequestFullscreen();
+  }
+});
+</script>
+<script>
+window.addEventListener("load", () => {
+  const vid = document.getElementById("mainVideo");
+  vid.play().catch(() => {
+    console.log("Autoplay blocked (normal on some devices)");
+  });
+});
+</script>
+
 
 </body>
 </html>
