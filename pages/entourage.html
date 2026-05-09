@@ -351,9 +351,56 @@ h4.center {
 .entourage-center-title {
   margin-top: -4px;  /* pulls subtitle closer */
 }
+/* 📱 MOBILE FIX */
+@media (max-width: 768px) {
 
+  /* Stack columns vertically */
+  .entourage-row {
+    flex-direction: column;
+    gap: 10px;
+  }
 
+  .entourage-col {
+    width: 100%;
+    text-align: center !important;
+    padding: 0 !important;
+  }
 
+  /* Adjust font sizes */
+  h1 {
+    font-size: 32px;
+  }
+
+  h4 {
+    font-size: 20px;
+  }
+
+  .entourage-heading {
+    font-size: 14px;
+  }
+
+  .entourage-col p {
+    font-size: 13px;
+  }
+
+  /* Adjust container spacing */
+  .invite {
+    padding: 20px 14px;
+  }
+
+  /* Fix navigation button size */
+  .nav-btn {
+    font-size: 13px;
+    padding: 12px;
+  }
+}
+.invite {
+  max-width: 600px;
+  margin: auto;
+}
+.entourage-row {
+  flex-wrap: wrap;
+}
 
 
 
