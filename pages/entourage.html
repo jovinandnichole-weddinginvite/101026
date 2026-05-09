@@ -41,10 +41,10 @@ input:focus,
 select:focus,
 textarea:focus {
   outline: none;
-  border-color: #fb6f92;
+  border-color: #f1f1f1;
   box-shadow:
     0 0 10px rgba(251,111,146,0.4),
-    inset 0 1px 0 rgba(255,255,255,0.5);
+    inset 0 1px 0 rgba(250, 250, 250, 0.5);
 }
   .nav-buttons {
   display: grid;
@@ -130,7 +130,7 @@ textarea:focus {
  h2 {
   font-family: "Playfair Display", serif;
   font-size: 15px;
-  color: #fb6f92;
+  color: #f7f7f7;
   margin-bottom: 10px;
   
 }
@@ -176,7 +176,7 @@ textarea:focus {
 
 
 body {
-  color: #555;
+  color: #fff9f9;
 }
 
 
@@ -185,10 +185,10 @@ i,
 .fa-solid,
 .fa-regular,
 .fa-brands {
-  color: #f5b2c3 !important;
+  color: #ffffff !important;
 }
 ::placeholder {
-  color: #fb6f92;
+  color: #e9e9e9;
   opacity: 0.8;
 }
 
@@ -241,11 +241,11 @@ i,
   background-position: top;
 }
 
-/* 💗 Make ALL Entourage text pink */
-#entourageContent,
-#entourageContent * {
-  color: #fb6f92 !important;
+
+.entourage-heading {
+  color: #ffffff !important;
 }
+
 /* 💗 Entourage text color */
 #entourageContent p,
 #entourageContent h4,
@@ -255,7 +255,7 @@ i,
 #entourageContent .entourage-center-title,
 #entourageContent .entourage-center-subtitle,
 #entourageContent strong {
-  color: #fb6f92;
+  color: #ffffff;
 }
 
 
@@ -295,10 +295,10 @@ h1 {
 /* ✨ Thin dividing elegance */
 h1::after {
   content: "";
-  display: block;
+  display: none;
   width: 60px;
   height: 1px;
-  background: #fb6f92;
+  background: #fcfcfc;
   margin: 12px auto 0;
   opacity: 0.6;
 }
@@ -310,8 +310,8 @@ h1::after {
 .entourage-row {
   display: flex;
   justify-content: space-between;
-  gap: 1px;
-  margin: 20px 0;
+  gap: 0px;
+  margin: 15px 0;
 }
 
 .entourage-col {
@@ -332,7 +332,7 @@ h1::after {
 
 /* Headings */
 .entourage-heading {
-  font-size: 12px;
+  font-size: 10px;
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 8px;
@@ -354,7 +354,25 @@ h4.center {
   font-size: 10px;
 }
 
+.entourage-row {
+  display: flex;
+  justify-content: center; /* was space-between */
+  gap: 1px; /* controls the CENTER gap */
+}
 
+.entourage-col {
+  width: 45%; /* slightly smaller so they sit closer */
+}
+
+.entourage-col.left {
+  text-align: right;
+  padding-right: 5px; /* reduced from 15px */
+}
+
+.entourage-col.right {
+  text-align: left;
+  padding-left: 5px; /* reduced from 15px */
+}
 
 </style>
 
