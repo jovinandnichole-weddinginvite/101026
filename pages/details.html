@@ -956,13 +956,16 @@ i,
 
 .reveal {
   opacity: 0;
-  transform: translateY(30px) translateX(-8px);
-  transition: opacity 0.9s ease, transform 0.9s ease;
+  transform: translateY(40px) scale(0.98);
+  transition: 
+    opacity 0.9s ease-out,
+    transform 0.9s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--delay, 0s);
 }
 
 .reveal.active {
   opacity: 1;
-  transform: translateY(0) translateX(0);
+  transform: translateY(0) scale(1);
 }
 .entourage-wrapper p {
   opacity: 0;
@@ -1882,21 +1885,26 @@ font-family: "Parisienne", cursive;
 
 
 <script>
-  const reveals = document.querySelectorAll('.section, .details');
+document.addEventListener("DOMContentLoaded", () => {
+  const reveals = document.querySelectorAll('.reveal');
 
   function revealOnScroll() {
     const height = window.innerHeight;
+
     reveals.forEach(el => {
       const top = el.getBoundingClientRect().top;
+
       if (top < height - 80) {
-        el.classList.add('reveal', 'active');
+        el.classList.add('active');
       }
     });
   }
 
   window.addEventListener('scroll', revealOnScroll);
   revealOnScroll();
+});
 </script>
+
 
 
 
@@ -1925,13 +1933,13 @@ font-family: "Parisienne", cursive;
  
 
   <div class="timeline" style="margin-top:14px; text-align:center;">
-      <img src="../images/timeline.png" alt="Nichole and Jovin QR Code">
+<img class="reveal" style="--delay:0.2s" src="../images/timeline.png" alt="Nichole and Jovin QR Code">
     </div>
 
 
 <hr class="bottom-line">
-  <h4 class="center">Gift Guide</h4>
-    <p>
+<h4 class="center reveal" style="--delay:0.2s">Gift Guide</h4>
+   <p class="reveal" style="--delay:0.4s">
       As love is what the day is all about, your presence is one we can’t celebrate without.
       But should you still believe a gift is worth giving, a
       <strong>monetary gift</strong> for our future is a delightful blessing.
@@ -1939,7 +1947,7 @@ font-family: "Parisienne", cursive;
 
     <!-- QR CODE -->
     <div class="qr" style="margin-top:14px; text-align:center;">
-      <img src="../images/QRcode.jpg" alt="Nichole and Jovin QR Code">
+    <img class="reveal" style="--delay:0.2s" src="../images/QRcode.jpg" alt="Nichole and Jovin QR Code">
     </div><br><br>
   
 
@@ -1947,12 +1955,12 @@ font-family: "Parisienne", cursive;
 
   <div>
 
-  <h4 class="center">Snap &amp; Share</h4>
- <p>
+ <h4 class="center reveal" style="--delay:0.2s">Snap &amp; Share</h4>
+ <p class="reveal" style="--delay:0.4s">
       You may capture and share your favorite moments during our wedding day. Don’t forget to tag us! Your photos and videos will add to the memories we will forever cherish.
     </p>
 
- <p>#NIKKIligsapagibigniNIÑO</p><br>
+ <p class="reveal" style="--delay:0.4s">#NIKKIligsapagibigniNIÑO</p><br>
 <hr class="bottom-line">
 <div class="nav-buttons">
     <a href="../index.html" class="nav-btn">
