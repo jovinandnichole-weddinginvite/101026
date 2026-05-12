@@ -11,6 +11,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
 
 
+
 <style>
 
 .bottom-line {
@@ -255,6 +256,7 @@ i,
 #entourageContent .entourage-center-subtitle,
 #entourageContent strong {
   color: #ffffff;
+  
 }
 
 
@@ -265,14 +267,26 @@ h4 {
   font-family: "Ivory Fern", serif;
 }
 
+h1, h4 {
+font-family: "Parisienne", cursive;
+}
 
+/* 🎀 Make all Entourage titles use same font */
+.entourage-heading,
+.entourage-center-title,
+.entourage-center-subtitle,
+h1,                 /* Entourage title */
+h4,                 /* Section titles like Secondary Sponsors, Bearers */
+strong {            /* Candle, Veil, Cord, Ring Bearer, etc. */
+font-family: "Parisienne", cursive;
+}
 /* ===============================
    🖤 VOGUE-STYLE TYPOGRAPHY
    =============================== */
 
 /* 🎀 MAIN TITLE — Editorial Serif */
 h1 {
-font-family: "Parisienne", cursive;
+  font-family: "Cormorant Garamond", serif !important;
   font-weight: 600;
   font-size: 30px;
   margin-bottom: 10px;
