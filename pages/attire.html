@@ -1108,10 +1108,27 @@ body {
   z-index: -2;
 }
 
+body {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* ✅ prevents weird vertical squeeze */
+}
+@media (max-width: 480px) {
+  .details {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .invite {
+    margin: 0 auto;
+    width: 100%;
+    max-width: 95%;   /* keeps it centered with space on sides */
+  }
+}
 
 
 .invite {
-  background:
 background: rgba(255,255,255,0.08); /* very light glass */
   max-width: 700px;
   width: 100%;
@@ -1121,6 +1138,7 @@ background: rgba(255,255,255,0.08); /* very light glass */
   text-align: center;
   background-size: cover;
   background-position: top;
+  margin: 0 auto; /* ✅ ensures center */
 }
 
 
