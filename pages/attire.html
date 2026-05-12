@@ -15,7 +15,7 @@
 
 <style>
 
- .bottom-line {
+.bottom-line {
   margin: 30px auto;         /* ✅ centers horizontally */
   border: none;
   height: 1px;
@@ -26,6 +26,7 @@
     rgba(255, 255, 255, 0.5),
     transparent
   ); /* ✅ same elegant fade on both sides */
+}
 }
   /* ✨ Transparent RSVP Fields (Glass Style) */
 input,
@@ -875,14 +876,34 @@ i,
 
 .reveal {
   opacity: 0;
-  transform: translateY(30px) translateX(-8px);
-  transition: opacity 0.9s ease, transform 0.9s ease;
+  transform: translateY(30px);
 }
 
 .reveal.active {
   opacity: 1;
-  transform: translateY(0) translateX(0);
+  transform: translateY(0);
+  transition: opacity 0.9s ease, transform 0.9s ease;
 }
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* stagger delays */
+.reveal:nth-of-type(1) { transition-delay: 0.1s; }
+.reveal:nth-of-type(2) { transition-delay: 0.2s; }
+.reveal:nth-of-type(3) { transition-delay: 0.3s; }
+.reveal:nth-of-type(4) { transition-delay: 0.4s; }
+
+.reveal.active {
+  transition: all 0.8s ease;
+}
+
 .entourage-wrapper p {
   opacity: 0;
   transform: translateY(10px);
@@ -1808,7 +1829,7 @@ body * {
 <div class="video-overlay"></div>
 
 
-
+<div class="details reveal">
 <div class="invite">
   <hr class="bottom-line">
   <h1>DRESS CODE</h1>
@@ -1944,6 +1965,28 @@ body * {
     });
   });
 </script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const reveals = document.querySelectorAll(".section, .details, .attire, .attire-illustration");
+
+  function revealOnScroll() {
+    const windowHeight = window.innerHeight;
+
+    reveals.forEach(el => {
+      const elementTop = el.getBoundingClientRect().top;
+
+      if (elementTop < windowHeight - 80) {
+        el.classList.add("active");
+      }
+    });
+  }
+
+  window.addEventListener("scroll", revealOnScroll);
+
+  // Run once on load
+  revealOnScroll();
+});
+</script>
 <br>
 
 
@@ -1962,7 +2005,7 @@ body * {
   </a>
 <hr class="bottom-line">
 </div>
-
+</div>
 </div> 
   </div>
 
