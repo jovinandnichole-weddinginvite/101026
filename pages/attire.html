@@ -16,20 +16,21 @@
     text-align: center;
   }
 
-  .attire-grid strong {
-    display: block;      /* stack label above text */
-    width: auto;         /* remove fixed width */
-    text-align: center;  /* ✅ center label */
-    margin: 0 0 4px 0;   /* spacing below label */
-  }
-
   .attire-grid p {
+    display: block;
     text-align: center;
   }
+
+  .attire-grid strong {
+    width: auto !important;   /* ✅ ensures override */
+    text-align: center !important;
+
+  }
 }
-
   
-
+.attire-grid p {
+  margin-bottom: 10px;
+}
 .bottom-line {
   margin: 30px auto;         /* ✅ centers horizontally */
   border: none;
