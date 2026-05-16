@@ -30,7 +30,7 @@ text-shadow: 0 2px 8px rgba(0,0,0,0.25);
     margin-bottom: 75px;
   position: relative;
   display: flex;
-
+font-family: "Playfair Display", serif;
   height: 220px;
   border-radius: 22px;
   overflow: hidden;
@@ -57,6 +57,7 @@ text-shadow: 0 2px 8px rgba(0,0,0,0.25);
 .venue-link.church i {
   font-size: 20px;
   margin-bottom: 6px;
+  
 }
 
 .venue-link.church strong {
@@ -74,7 +75,7 @@ text-shadow: 0 2px 8px rgba(0,0,0,0.25);
   .venue-link.reception {
   position: relative;
   display: flex;
-
+font-family: "Playfair Display", serif;
   height: 220px;
   border-radius: 22px;
   overflow: hidden;
@@ -101,6 +102,7 @@ text-shadow: 0 2px 8px rgba(0,0,0,0.25);
 .venue-link.reception i {
   font-size: 20px;
   margin-bottom: 6px;
+  font-family: "Playfair Display", serif;
 }
 
 .venue-link.reception strong {
@@ -125,7 +127,6 @@ text-shadow: 0 2px 8px rgba(0,0,0,0.25);
     rgba(255, 255, 255, 0.5),
     transparent
   ); /* ✅ same elegant fade on both sides */
-}
 }
   /* ✨ Transparent RSVP Fields (Glass Style) */
 input,
@@ -1908,7 +1909,13 @@ body * {
   color: #f5b2c3 !important;
 }
 
-
+/* ✅ Override global Poppins */
+.venue-link.church,
+.venue-link.reception,
+.venue-link.church strong,
+.venue-link.reception strong {
+  font-family: "Playfair Display", serif !important;
+}
 </style>
 </head>
 
