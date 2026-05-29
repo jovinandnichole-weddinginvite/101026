@@ -13,6 +13,7 @@
 
 
 
+
 <div class="invite">
  
 
@@ -128,6 +129,11 @@ document.querySelectorAll(".time-box span").forEach(el => {
 
 
 <hr class="bottom-line"><br>
+
+ <button id="musicToggle" class="music-btn">
+  <i class="fa-solid fa-music"></i>
+  <span class="music-label">Music</span>
+</button>
 
 <div class="nav-buttons">
     <a href="pages/moments.html" class="nav-btn">
@@ -791,27 +797,56 @@ h4 {
 }
 
 .music-btn {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #ece7e8;
-  color: #fff;
-  border: none;
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
-  font-size: 20px;
-  cursor: pointer;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-  z-index: 9999;
-  transition: background 0.3s ease, transform 0.3s ease;
-}
-/* ===============================
-   🎵 MUSIC BUTTON – ADVANCED FX
-   =============================== */
+  position: static;
+  bottom: 20px;       /* ✅ moves to bottom */
+  left: 50%;
 
-.music-btn {
-  overflow: visible;
+
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 30px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  font-size: 14px;
+
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.25);
+
+  color: #fff;
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 20px rgba(0,0,0,0.2),
+    inset 0 1px 0 rgba(255,255,255,0.3);
+
+  z-index: 9999;
+}
+
+
+.music-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+/* ✨ Elegant top line accent (MATCHES bottom-line) */
+.music-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 20%;
+  width: 60%;
+  height: 1px;
+
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255,255,255,0.6),
+    transparent
+  );
 }
 
 /* --- MINI EQUALIZER --- */
@@ -835,15 +870,82 @@ h4 {
   50% { height: 14px; }
 }
 
-/* --- BPM SYNCED PULSE --- */
-.music-btn.playing {
-  animation: bpmPulse var(--bpm) ease-in-out infinite;
+.bottom-line {
+
+  border: none;
+  height: 1px;
+  width: 63%;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  );
 }
 
-@keyframes bpmPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.08); }
+
+
+/* ✅ KEEP center positioning ALWAYS */
+
+
+/* 🌸 Soft breathing glow (NO movement) */
+.music-btn.playing {
+  animation: musicGlow 2.5s ease-in-out infinite;
 }
+
+@keyframes musicGlow {
+  0%, 100% {
+    box-shadow:
+      0 8px 20px rgba(0,0,0,0.2),
+      0 0 0 rgba(255,182,193,0);
+  }
+  50% {
+    box-shadow:
+      0 8px 22px rgba(0,0,0,0.25),
+      0 0 18px rgba(255,182,193,0.6),
+      0 0 30px rgba(255,182,193,0.4);
+  }
+}
+
+/* 🎧 Subtle icon shimmer instead of spin */
+.music-btn.playing i {
+  animation: iconShimmer 2s ease-in-out infinite;
+}
+
+@keyframes iconShimmer {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* 🎵 Sound wave ring WITHOUT scaling main button */
+.music-btn.playing::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,182,193,0.6);
+  animation: wavePulse 2s ease-out infinite;
+}
+
+@keyframes wavePulse {
+  0% {
+    opacity: 0.7;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+/* 🛑 Hover — NO movement */
+.music-btn:hover {
+  background: rgba(255,255,255,0.12);
+}
+
+/* ✅ Click effect without moving */
+.music-btn:active {
+  filter: brightness(1.2);
+}
+
 
 /* --- FLOATING MUSIC NOTES --- */
 .music-note {
@@ -865,9 +967,7 @@ h4 {
     transform: translate(-20px, -120px) scale(1.3);
   }
 }
-.music-btn.playing {
-  animation: bpmPulse var(--bpm) ease-in-out infinite;
-}
+
 /* --- PAUSED STATE --- */
 .music-btn.paused {
   animation: pausedWiggle 0.4s ease;
@@ -938,11 +1038,6 @@ h4 {
   }
 }
 
-
-.music-btn:hover {
-  background: #ff8fac;
-  transform: scale(1.05);
-}
 
 
 
@@ -2010,9 +2105,14 @@ button:hover {
   50% { transform: scale(1.05); }
 }
 
-
-
+.music-btn.playing {
+  box-shadow:
+    0 8px 24px rgba(0,0,0,0.25),
+    0 0 12px rgba(255,255,255,0.25);
 }
+
+
+
 /* ===============================
    ✨ BODY REVEAL AFTER INTRO
    =============================== */
@@ -2104,16 +2204,6 @@ body * {
 
 
 
-
-
-
-<button id="musicToggle" class="music-btn">
-  <div class="eq">
-    <span></span><span></span><span></span>
-  </div>
-  <i class="fa-solid fa-music"></i>
-</button>
-
 <script>
   const music = document.getElementById("bgMusic");
   const toggle = document.getElementById("musicToggle");
@@ -2173,13 +2263,16 @@ body * {
       stopNotes();
       toggle.classList.remove("playing");
       toggle.classList.add("paused");
-      toggle.innerHTML = '<div class="eq"><span></span><span></span><span></span></div><i class="fa-solid fa-music"></i>';
+     toggle.innerHTML =
+  '<i class="fa-solid fa-pause"></i><span class="music-label">Pause</span>';
     } else {
       music.play();
       startNotes();
       toggle.classList.add("playing");
       toggle.classList.remove("paused");
-      toggle.innerHTML = '<div class="eq"><span></span><span></span><span></span></div><i class="fa-solid fa-pause"></i>';
+toggle.innerHTML =
+  '<i class="fa-solid fa-music"></i><span class="music-label">Music</span>';
+
     }
 
     isPlaying = !isPlaying;
@@ -2376,7 +2469,8 @@ form.addEventListener("submit", () => {
   #NIKKIligsapagibigniNIÑO
 </h4>
 
- 
+
+
 <hr class="bottom-line">
 </body>
 
