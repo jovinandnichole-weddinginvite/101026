@@ -130,10 +130,30 @@ document.querySelectorAll(".time-box span").forEach(el => {
 
 <hr class="bottom-line"><br>
 
- <button id="musicToggle" class="music-btn">
-  <i class="fa-solid fa-music"></i>
-  <span class="music-label">Music</span>
-</button>
+
+<div class="music-player" id="musicToggle">
+
+  <!-- 🎚 REAL VISUALIZER -->
+  <canvas id="visualizer"></canvas>
+
+  <!-- 📊 PROGRESS -->
+  <div class="progress-container" id="progressContainer">
+    <div class="progress" id="progress"></div>
+  </div>
+
+  <!-- 🎵 CONTROLS -->
+  <div class="music-controls">
+    <button id="playBtn">
+      <i class="fa-solid fa-play"></i>
+    </button>
+
+    <span id="currentTime">0:00</span>
+    <span>/</span>
+    <span id="duration">0:00</span>
+  </div>
+
+</div>
+
 
 <div class="nav-buttons">
     <a href="pages/moments.html" class="nav-btn">
@@ -795,7 +815,135 @@ h4 {
   justify-content: center;
   width: 100%;
 }
+.music-player {
+  width: 100%;
+  max-width: 280px;
+  margin: 15px auto;
+  text-align: center;
+}
+.music-player {
+  width: 100%;
+  max-width: 280px;
+  margin: 16px auto;
+}
 
+/* 🎚 Canvas */
+#visualizer {
+  width: 100%;
+  height: 60px;
+  display: block;
+  border-radius: 12px;
+}
+
+/* 🌸 Progress */
+.progress-container {
+  width: 100%;
+  height: 4px;
+  background: rgba(255,255,255,0.25);
+  margin-top: 6px;
+  border-radius: 10px;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg,#fb6f92,#f8e7c7);
+}
+
+/* 🎵 Controls */
+.music-controls {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+  align-items: center;
+  font-size: 12px;
+}
+
+.music-controls button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* 🎚 Equalizer */
+.visualizer {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 3px;
+  height: 35px;
+  margin-bottom: 8px;
+}
+
+.visualizer .bar {
+  width: 4px;
+  height: 8px;
+  background: #fff;
+  border-radius: 2px;
+  opacity: 0.8;
+  animation: bounce 1s infinite ease-in-out;
+}
+
+/* stagger animation */
+.visualizer .bar:nth-child(2){animation-delay:.1s;}
+.visualizer .bar:nth-child(3){animation-delay:.2s;}
+.visualizer .bar:nth-child(4){animation-delay:.3s;}
+.visualizer .bar:nth-child(5){animation-delay:.4s;}
+.visualizer .bar:nth-child(6){animation-delay:.5s;}
+.visualizer .bar:nth-child(7){animation-delay:.6s;}
+.visualizer .bar:nth-child(8){animation-delay:.7s;}
+.visualizer .bar:nth-child(9){animation-delay:.8s;}
+.visualizer .bar:nth-child(10){animation-delay:.9s;}
+
+@keyframes bounce {
+  0%,100% { height: 8px; }
+  50% { height: 28px; }
+}
+
+/* 🟣 Progress */
+.progress-container {
+  width: 100%;
+  height: 3px;
+  background: rgba(255,255,255,0.3);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 6px 0;
+}
+
+.progress {
+  height: 100%;
+  width: 0%;
+  background: #fff;
+}
+
+/* 🎵 Controls */
+.music-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.music-controls button {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Pause animation when stopped */
+.music-player.paused .bar {
+  animation: none;
+  height: 6px;
+  opacity: 0.4;
+}
 .music-btn {
   position: static;
   bottom: 20px;       /* ✅ moves to bottom */
@@ -2205,79 +2353,132 @@ body * {
 
 
 <script>
-  const music = document.getElementById("bgMusic");
-  const toggle = document.getElementById("musicToggle");
+const audio = document.getElementById("bgMusic");
+const playBtn = document.getElementById("playBtn");
+const progress = document.getElementById("progress");
+const progressContainer = document.getElementById("progressContainer");
+const currentTimeEl = document.getElementById("currentTime");
+const durationEl = document.getElementById("duration");
 
-  const BPM = 96; // 🎼 change if needed
-  toggle.style.setProperty("--bpm", `${60 / BPM}s`);
+const canvas = document.getElementById("visualizer");
+const ctx = canvas.getContext("2d");
 
-  let isPlaying = false;
-  let noteInterval;
+canvas.width = canvas.offsetWidth;
+canvas.height = canvas.offsetHeight;
 
-  function spawnMusicNote() {
-    const note = document.createElement("div");
-    note.className = "music-note";
-    note.textContent = Math.random() > 0.5 ? "🎵" : "🎶";
+let audioCtx, analyser, source, dataArray;
+let isPlaying = false;
 
-    const rect = toggle.getBoundingClientRect();
-    note.style.left = rect.left + rect.width / 2 + "px";
-    note.style.top = rect.top + "px";
+/* ✅ INIT AUDIO CONTEXT */
+function initAudio() {
+  if (audioCtx) return;
 
-    document.body.appendChild(note);
-    setTimeout(() => note.remove(), 3000);
-  }
+  audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  analyser = audioCtx.createAnalyser();
 
-  function startNotes() {
-    noteInterval = setInterval(spawnMusicNote, 900);
-  }
+  source = audioCtx.createMediaElementSource(audio);
+  source.connect(analyser);
+  analyser.connect(audioCtx.destination);
 
-  function stopNotes() {
-    clearInterval(noteInterval);
-  }
+  analyser.fftSize = 64;
+  const bufferLength = analyser.frequencyBinCount;
+  dataArray = new Uint8Array(bufferLength);
+}
 
-  const startMusic = () => {
-    if (!isPlaying) {
-      music.play().then(() => {
-        isPlaying = true;
-        toggle.classList.add("playing");
-        toggle.classList.remove("paused");
-        toggle.innerHTML = '<div class="eq"><span></span><span></span><span></span></div><i class="fa-solid fa-pause"></i>';
-        startNotes();
-      }).catch(() => {});
-    }
+/* 🎚 DRAW VISUALIZER */
+function draw() {
+  requestAnimationFrame(draw);
 
-    document.removeEventListener("click", startMusic);
-    document.removeEventListener("touchstart", startMusic);
-    document.removeEventListener("scroll", startMusic);
-  };
+  analyser.getByteFrequencyData(dataArray);
 
-  document.addEventListener("click", startMusic);
-  document.addEventListener("touchstart", startMusic);
-  document.addEventListener("scroll", startMusic);
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  toggle.addEventListener("click", (e) => {
-    e.stopPropagation();
+  const barWidth = (canvas.width / dataArray.length) * 0.7;
+  let x = 0;
 
-    if (isPlaying) {
-      music.pause();
-      stopNotes();
-      toggle.classList.remove("playing");
-      toggle.classList.add("paused");
-     toggle.innerHTML =
-  '<i class="fa-solid fa-pause"></i><span class="music-label">Pause</span>';
-    } else {
-      music.play();
-      startNotes();
-      toggle.classList.add("playing");
-      toggle.classList.remove("paused");
-toggle.innerHTML =
-  '<i class="fa-solid fa-music"></i><span class="music-label">Music</span>';
+  dataArray.forEach((value, i) => {
+    const height = value / 2;
 
-    }
+    // 💗 Pink → Gold gradient
+    const gradient = ctx.createLinearGradient(0,0,0,canvas.height);
+    gradient.addColorStop(0,"#fb6f92");
+    gradient.addColorStop(1,"#f8e7c7");
 
-    isPlaying = !isPlaying;
+    ctx.fillStyle = gradient;
+    ctx.fillRect(x, canvas.height - height, barWidth, height);
+
+    x += barWidth + 3;
   });
+}
+
+/* ▶ PLAY */
+function playAudio() {
+  initAudio();
+
+  audio.play();
+  audioCtx.resume();
+
+  isPlaying = true;
+  playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+
+  draw();
+}
+
+/* ⏸ PAUSE */
+function pauseAudio() {
+  audio.pause();
+  isPlaying = false;
+  playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
+}
+
+/* 🎛 TOGGLE */
+playBtn.addEventListener("click", () => {
+  if (isPlaying) {
+    pauseAudio();
+  } else {
+    playAudio();
+  }
+});
+
+/* ⏱ TIME FORMAT */
+function formatTime(time) {
+  const m = Math.floor(time / 60);
+  const s = Math.floor(time % 60);
+  return `${m}:${s < 10 ? "0" + s : s}`;
+}
+
+/* ⏱ LOAD DURATION */
+audio.addEventListener("loadedmetadata", () => {
+  durationEl.textContent = formatTime(audio.duration);
+});
+
+/* ⏱ UPDATE TIME + PROGRESS */
+audio.addEventListener("timeupdate", () => {
+  const percent = (audio.currentTime / audio.duration) * 100;
+  progress.style.width = percent + "%";
+  currentTimeEl.textContent = formatTime(audio.currentTime);
+});
+
+/* 👆 DRAG / SEEK */
+progressContainer.addEventListener("click", (e) => {
+  const width = progressContainer.clientWidth;
+  const clickX = e.offsetX;
+  const newTime = (clickX / width) * audio.duration;
+  audio.currentTime = newTime;
+});
+
+/* ✅ AUTOPLAY ON FIRST TOUCH */
+const autoPlay = () => {
+  playAudio();
+
+  document.removeEventListener("click", autoPlay);
+  document.removeEventListener("touchstart", autoPlay);
+};
+
+document.addEventListener("click", autoPlay);
+document.addEventListener("touchstart", autoPlay);
 </script>
+
 
   <script>
   const sparkleCount = 30;
