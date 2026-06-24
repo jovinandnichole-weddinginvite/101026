@@ -2578,6 +2578,19 @@ const form = document.getElementById("rsvpForm");
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
+
+ 
+  // ✅ FADE OUT invitation message
+  const status = document.getElementById("nameStatus");
+  status.style.transition = "opacity 0.4s ease";
+  status.style.opacity = "0";
+
+  setTimeout(() => {
+    status.style.display = "none";
+  }, 400);
+
+
+
   // ✅ collect ALL extra guests
   const extraGuests = [];
 
@@ -2603,7 +2616,7 @@ form.addEventListener("submit", async (e) => {
     message: form.message.value
   };
 
-  await fetch("https://script.google.com/macros/s/AKfycbz-onXJI-35-khm9fAchGhTn3fgy43l0h657WVgPiHEp9oU8pYtUZwo0nxcbmBlX1Id/exec", {
+   fetch("https://script.google.com/macros/s/AKfycbz-onXJI-35-khm9fAchGhTn3fgy43l0h657WVgPiHEp9oU8pYtUZwo0nxcbmBlX1Id/exec", {
     method: "POST",
     body: JSON.stringify(formData)
   });
@@ -2667,6 +2680,13 @@ const submitBtn = document.getElementById("submitBtn");
 if (alreadySubmitted) {
   // ✅ Hide form
   form.style.display = "none";
+
+
+  const statusText = document.getElementById("nameStatus");
+  statusText.style.display = "none"; // ✅ hide the invite text here too
+}
+
+
 
   // ✅ Show message
   statusText.innerHTML = `
