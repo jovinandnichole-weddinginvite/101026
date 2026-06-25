@@ -230,26 +230,22 @@ form textarea:focus {
   background: rgba(255,255,255,0.18);
 }
 .music-note-top {
-  display: flex;
-  justify-content: center;
-  margin-bottom: -6px;
-
-  font-size: 22px;
+  font-size: 20px;
   color: #f5b2c3;
-
-  text-shadow:
-    0 0 6px rgba(251,111,146,0.7),
-    0 0 14px rgba(251,111,146,0.4);
-
-  opacity: 0.6;
-  transform: translateY(0);
-  transition: all 0.3s ease;
+  opacity: 0.7;
+  transition: transform 0.2s ease, filter 0.2s ease;
 }
 
+/* subtle breathing */
 .music-note-top.active {
-  opacity: 1;
-  transition: transform 0.08s linear, filter 0.1s ease;
+  animation: softBeat 1.6s ease-in-out infinite;
 }
+
+@keyframes softBeat {
+  0%,100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
 
 /* 💗 Beat pulse */
 @keyframes notePulse {
@@ -421,10 +417,7 @@ font-family: "Great Vibes", cursive;
   text-shadow: 0 2px 8px rgba(0,0,0,0.25);
 
 
-  h1 {
-  font-size: 50px;
- 
-}
+
 
 h4 {
   font-size: 25px;
@@ -1493,9 +1486,36 @@ i,
   }
 }
 .video-bg {
-  animation: slowZoom 30s ease-in-out infinite alternate;
+  transform: scale(1.05);
 }
 
+@media (min-width: 768px) {
+  .video-bg {
+    animation: slowZoom 30s ease-in-out infinite alternate;
+  }
+}
+@media (max-width: 480px) {
+
+  /* reduce blur (heavy GPU) */
+  * {
+    backdrop-filter: none !important;
+  }
+
+  /* reduce shadows */
+  .nav-btn,
+  .time-box {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+  }
+
+  /* reduce sparkles */
+  .sparkle {
+    display: none;
+  }
+
+  canvas {
+    height: 40px !important;
+  }
+}
 @keyframes slowZoom {
   from { transform: scale(1); }
   to { transform: scale(1.08); }
@@ -2384,8 +2404,19 @@ body * {
     });
   }
 
-  window.addEventListener('scroll', revealOnScroll);
-  revealOnScroll();
+let ticking = false;
+
+function onScroll() {
+  if (!ticking) {
+    window.requestAnimationFrame(() => {
+      revealOnScroll();
+      ticking = false;
+    });
+    ticking = true;
+  }
+}
+
+window.addEventListener('scroll', onScroll);
 </script>
 
 
@@ -2422,16 +2453,18 @@ const durationEl = document.getElementById("duration");
 const canvas = document.getElementById("visualizer");
 const ctx = canvas.getContext("2d");
 
-const topNote = document.querySelector(".music-note-top");
-let lastBeat = 0;
-
-canvas.width = canvas.offsetWidth;
-canvas.height = canvas.offsetHeight;
-
 let audioCtx, analyser, source, dataArray;
 let isPlaying = false;
 
-/* ✅ INIT AUDIO CONTEXT */
+/* ✅ RESPONSIVE CANVAS */
+function resizeCanvas() {
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+}
+window.addEventListener("resize", resizeCanvas);
+resizeCanvas();
+
+/* ✅ INIT AUDIO */
 function initAudio() {
   if (audioCtx) return;
 
@@ -2442,138 +2475,84 @@ function initAudio() {
   source.connect(analyser);
   analyser.connect(audioCtx.destination);
 
-  analyser.fftSize = 64;
-  const bufferLength = analyser.frequencyBinCount;
-  dataArray = new Uint8Array(bufferLength);
+  analyser.fftSize = 32; // ✅ lighter for mobile
+  dataArray = new Uint8Array(analyser.frequencyBinCount);
 }
-
-
 
 /* ▶ PLAY */
 function playAudio() {
   initAudio();
-
   audio.play();
   audioCtx.resume();
-
   isPlaying = true;
+
   playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-
-  topNote.classList.add("active"); // ✅ activate note
-
   draw();
 }
 
-
+/* ⏸ PAUSE */
 function pauseAudio() {
   audio.pause();
   isPlaying = false;
   playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-
-  topNote.classList.remove("active"); // ✅ stop animation
 }
-let smoothBass = 0;
+
+/* 🎚 VISUALIZER (SMOOTH + LIGHT) */
 function draw() {
   if (!isPlaying) return;
 
   requestAnimationFrame(draw);
-
   analyser.getByteFrequencyData(dataArray);
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  const barWidth = (canvas.width / dataArray.length) * 1.8;
-  let x = 0;
+  const barWidth = canvas.width / dataArray.length;
 
-  // ✅ DRAW VISUALIZER
   for (let i = 0; i < dataArray.length; i++) {
-    const barHeight = dataArray[i];
+    const value = dataArray[i];
+    const height = value / 2;
 
-    ctx.fillStyle = `rgba(251, 111, 146, ${barHeight / 255})`;
-    ctx.fillRect(x, canvas.height - barHeight / 2, barWidth, barHeight / 2);
-
-    x += barWidth + 2;
-  }
-
-  /* ✅ ✅ REAL MUSIC REACTIVITY BELOW */
-
-  // 🎧 Get bass (low frequencies = beats)
-  let bass = 0;
-  const bassRange = 8; // lower frequencies = stronger beat
-
-  for (let i = 0; i < bassRange; i++) {
-    bass += dataArray[i];
-  }
-
-  bass /= bassRange;
-
-  // 🎯 Normalize
-  smoothBass = smoothBass * 0.8 + bass * 0.2; // smoothing
-const normalized = smoothBass / 255;
-
-
-  // ✅ Scale note based on bass
-  const scale = 1 + normalized * 0.8;
-  const lift = -normalized * 12;
-
-  topNote.style.transform = `translateY(${lift}px) scale(${scale})`;
-
-  // ✅ Glow stronger on louder beats
-  topNote.style.filter = `drop-shadow(0 0 ${6 + bass * 0.05}px rgba(251,111,146,0.9))`;
-
-  // ✅ OPTIONAL: generate floating notes on strong beat
-  const now = Date.now();
-  if (bass > 160 && now - lastBeat > 120) {
-    createMusicNote(true);
-    lastBeat = now;
+    ctx.fillStyle = `rgba(251,111,146,${value / 255})`;
+    ctx.fillRect(i * barWidth, canvas.height - height, barWidth - 2, height);
   }
 }
+
 /* 🎛 TOGGLE */
 playBtn.addEventListener("click", () => {
-  if (isPlaying) {
-    pauseAudio();
-  } else {
-    playAudio();
-  }
+  isPlaying ? pauseAudio() : playAudio();
 });
 
-/* ⏱ TIME FORMAT */
+/* ⏱ TIME */
 function formatTime(time) {
   const m = Math.floor(time / 60);
   const s = Math.floor(time % 60);
   return `${m}:${s < 10 ? "0" + s : s}`;
 }
 
-/* ⏱ LOAD DURATION */
 audio.addEventListener("loadedmetadata", () => {
   durationEl.textContent = formatTime(audio.duration);
 });
 
-/* ⏱ UPDATE TIME + PROGRESS */
 audio.addEventListener("timeupdate", () => {
   const percent = (audio.currentTime / audio.duration) * 100;
   progress.style.width = percent + "%";
   currentTimeEl.textContent = formatTime(audio.currentTime);
 });
 
-/* 👆 DRAG / SEEK */
-progressContainer.addEventListener("click", (e) => {
-  const width = progressContainer.clientWidth;
-  const clickX = e.offsetX;
-  const newTime = (clickX / width) * audio.duration;
+/* SEEK */
+progressContainer.addEventListener("click", e => {
+  const newTime = (e.offsetX / progressContainer.clientWidth) * audio.duration;
   audio.currentTime = newTime;
 });
 
-/* ✅ AUTOPLAY ON FIRST TOUCH */
-const autoPlay = () => {
-  playAudio();
+/* ✅ AUTO PLAY FIX (mobile safe) */
+document.addEventListener("touchstart", () => {
+  if (!audioCtx) playAudio();
+}, { once: true });
 
-  document.removeEventListener("click", autoPlay);
-  document.removeEventListener("touchstart", autoPlay);
-};
-
-document.addEventListener("click", autoPlay);
-document.addEventListener("touchstart", autoPlay);
+document.addEventListener("click", () => {
+  if (!audioCtx) playAudio();
+}, { once: true });
 </script>
 
 
