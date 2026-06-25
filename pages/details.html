@@ -1869,8 +1869,38 @@ body {
   color: #f5b2c3;
 }
 
+.qr {
+  text-align: center;
+  margin: 20px 0;
+}
 
+.qr img {
+  width: 180px;          /* ✅ slightly bigger for clarity */
+  max-width: 90%;        /* ✅ responsive on mobile */
+  display: block;
+  margin: 0 auto;        /* ✅ centers horizontally */
+  border-radius: 12px;   /* optional soft look */
+  box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
 
+.qr small {
+  display: block;
+  margin-top: 8px;
+  color: #eccece;
+  font-size: 12px;
+}
+.qr {
+  text-align: center;
+  margin: 24px auto;
+  padding: 16px;
+  border-radius: 18px;
+
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+
+  border: 1px solid rgba(255,255,255,0.2);
+  max-width: 260px;
+}
 
 h4 {
   font-size: 25px;
@@ -1944,8 +1974,12 @@ document.addEventListener("DOMContentLoaded", () => {
    <p class="reveal" style="--delay:0.4s">
       As love is what the day is all about, your presence is one we can’t celebrate without.
       But should you still believe a gift is worth giving, a
-      <strong>monetary gift</strong> for our future is a delightful blessing.
+      monetary gift for our future is a delightful blessing.
     </p>
+<div class="qr reveal" style="--delay:0.5s">
+  <img src="../images/QRcode.jpg" alt="Gift QR Code">
+  <small>Scan to send your gift</small>
+</div>
 
 
   <div>
@@ -1958,7 +1992,7 @@ document.addEventListener("DOMContentLoaded", () => {
  <p class="reveal" style="--delay:0.4s">#NIKKIligsapagibigniNIÑO</p><br>
 <hr class="bottom-line">
 <div class="nav-buttons">
-    <a href="../index.html" class="nav-btn">
+    <a href="../indexx.html" class="nav-btn">
     <i class=""></i> Back to Home
   </a>
 
