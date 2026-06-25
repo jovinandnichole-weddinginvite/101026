@@ -2578,6 +2578,11 @@ const form = document.getElementById("rsvpForm");
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
+  const name = form.name.value.trim();
+
+  // ✅ SAVE NAME AFTER SUBMIT
+  saveSubmission(name);
+
 
  
   // ✅ FADE OUT invitation message
@@ -2671,43 +2676,35 @@ form.addEventListener("submit", async (e) => {
 
 
 <script>
-const alreadySubmitted = localStorage.getItem("rsvpSubmitted");
 
 const form = document.getElementById("rsvpForm");
 const statusText = document.getElementById("nameStatus");
 const submitBtn = document.getElementById("submitBtn");
 
-if (alreadySubmitted) {
-  // ✅ Hide form
-  form.style.display = "none";
+</script>
+<script>
+/* ✅ STORAGE KEY */
+const STORAGE_KEY = "submittedRSVPs";
 
-
-  const statusText = document.getElementById("nameStatus");
-  statusText.style.display = "none"; // ✅ hide the invite text here too
+/* ✅ GET SAVED LIST */
+function getSubmittedList() {
+  return JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 }
 
-
-
-  // ✅ Show message
-  statusText.innerHTML = `
-    ✅ You have already submitted your RSVP.<br>
-    Thank you!
-  `;
-  statusText.style.color = "#b8f2d6";
-
-  // ✅ Disable button just in case
-  if (submitBtn) {
-    submitBtn.disabled = true;
-    submitBtn.textContent = "✅ Already Submitted";
+/* ✅ SAVE NAME */
+function saveSubmission(name) {
+  const list = getSubmittedList();
+  if (!list.includes(name)) {
+    list.push(name);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
   }
 }
 
-/* ✅ SAVE submission */
-form.addEventListener("submit", () => {
-  localStorage.setItem("rsvpSubmitted", "true");
-});
+/* ✅ CHECK IF NAME ALREADY SUBMITTED */
+function isAlreadySubmitted(name) {
+  return getSubmittedList().includes(name);
+}
 </script>
-
 
     <textarea name="message" placeholder="Message (optional)"></textarea>
 
@@ -2723,7 +2720,6 @@ form.addEventListener("submit", () => {
 
   </form>
 <script>
-/* ✅ YOUR GUEST LIST */
 const guestList = {
   "Tiu, Lanie": 2,
   "Dasalla, Jhoanna": 3, 
@@ -2763,7 +2759,7 @@ const guestList = {
   "Soliven, Nora": 1,
   "Pedro, Marivic": 2, 
   "Biri, Rodrigo": 2,
-  "Rubinno, James Loyd": 1,
+  "Rubino, James Loyd": 1,
   "Garcia, Abegael": 1,
   "Agustin, Winzyl Mac": 1,
   "Agustin, Wizyneth Audin": 1, 
@@ -2794,7 +2790,7 @@ const guestList = {
   "Rubino, Mervin": 2,
   "Caneda, Karl": 2, 
   "Ibe, Gilbert": 2,
-  "Francisco, Ralph": 2,
+  "Francisco, Ralph Vincent": 2,
   "Dacalan, Mariane": 2, 
   "Torres, Pritz Jay": 2,
   "Co, Tryschia": 1,
@@ -2838,7 +2834,7 @@ checkBtn.addEventListener("click", () => {
 
   let matchName = null;
 
-  // find match
+  // ✅ FIND MATCH FIRST
   for (let name in guestList) {
     if (normalize(name) === inputName) {
       matchName = name;
@@ -2846,7 +2842,19 @@ checkBtn.addEventListener("click", () => {
     }
   }
 
+  // ✅ IF FOUND → CHECK IF ALREADY SUBMITTED
   if (matchName) {
+
+    if (isAlreadySubmitted(matchName)) {
+      statusText.innerHTML = `
+        ❌ Further RSVP submissions are not permitted,
+        as you have already submitted one.
+      `;
+      statusText.style.color = "#ffb3b3";
+      rsvpForm.style.display = "none";
+      return;
+    }
+
     const maxGuests = guestList[matchName];
 
     statusText.innerHTML = `✅ You're invited! You can bring up to ${maxGuests - 1} guest(s).`;
@@ -2854,22 +2862,24 @@ checkBtn.addEventListener("click", () => {
 
     rsvpForm.style.display = "block";
 
-    // autofill name
+    // ✅ autofill name
     rsvpForm.querySelector('input[name="name"]').value = matchName;
 
-    // ✅ dynamically update guest dropdown
+    // ✅ update dropdown
     const guestsSelect = document.getElementById("guests");
     guestsSelect.innerHTML = `<option value="">Number of Guests</option>`;
 
     for (let i = 1; i <= maxGuests; i++) {
-      let label = i === 1 ? "1 (Just me)" : `${i} (${i - 1} guest${i > 2 ? "s" : ""})`;
+      let label = i === 1
+        ? "1 (Just me)"
+        : `${i} (${i - 1} guest${i > 2 ? "s" : ""})`;
+
       guestsSelect.innerHTML += `<option value="${i}">${label}</option>`;
     }
 
   } else {
     statusText.innerHTML = "❌ Sorry, your name is not on the guest list.";
     statusText.style.color = "#ffb3b3";
-
     rsvpForm.style.display = "none";
   }
 });
