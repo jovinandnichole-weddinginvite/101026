@@ -129,7 +129,9 @@ document.querySelectorAll(".time-box span").forEach(el => {
 
 
 <hr class="bottom-line"><br>
-
+<div class="music-note-top">
+  <i class="fa-solid fa-music"></i>
+</div>
 
 <div class="music-player" id="musicToggle">
 
@@ -226,6 +228,45 @@ form textarea:focus {
     inset 0 1px 0 rgba(255,255,255,0.6);
 
   background: rgba(255,255,255,0.18);
+}
+.music-note-top {
+  display: flex;
+  justify-content: center;
+  margin-bottom: -6px;
+
+  font-size: 22px;
+  color: #f5b2c3;
+
+  text-shadow:
+    0 0 6px rgba(251,111,146,0.7),
+    0 0 14px rgba(251,111,146,0.4);
+
+  opacity: 0.6;
+  transform: translateY(0);
+  transition: all 0.3s ease;
+}
+
+.music-note-top.active {
+  opacity: 1;
+  transition: transform 0.08s linear, filter 0.1s ease;
+}
+
+/* 💗 Beat pulse */
+@keyframes notePulse {
+  0%   { transform: translateY(0) scale(1); }
+  50%  { transform: translateY(-6px) scale(1.2); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+
+/* 🌸 subtle floating animation */
+@keyframes noteFloatTop {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
 }
 
 /* Dropdown arrow */
@@ -2283,6 +2324,24 @@ body.reveal-content .invite {
   }
 }
 
+.music-note {
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+
+  font-weight: bold;
+  color: #fbb1c5;
+
+  /* 💖 glow */
+  text-shadow:
+    0 0 6px rgba(251,111,146,0.7),
+    0 0 14px rgba(251,111,146,0.5),
+    0 0 24px rgba(251,111,146,0.3);
+
+  animation: noteSwirl 3s ease-out forwards;
+}
+
+
 /* 💗 Make ALL Entourage text pink */
 #entourageContent,
 #entourageContent * {
@@ -2363,6 +2422,9 @@ const durationEl = document.getElementById("duration");
 const canvas = document.getElementById("visualizer");
 const ctx = canvas.getContext("2d");
 
+const topNote = document.querySelector(".music-note-top");
+let lastBeat = 0;
+
 canvas.width = canvas.offsetWidth;
 canvas.height = canvas.offsetHeight;
 
@@ -2385,31 +2447,43 @@ function initAudio() {
   dataArray = new Uint8Array(bufferLength);
 }
 
-/* 🎚 DRAW VISUALIZER */
-function draw() {
-  requestAnimationFrame(draw);
+function createMusicNote(isBeat = false) {
+  const note = document.createElement("div");
+  note.className = "music-note";
 
-  analyser.getByteFrequencyData(dataArray);
+  const icons = ["♪","♫","♩","♬"];
+  note.textContent = icons[Math.floor(Math.random() * icons.length)];
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const btn = document.getElementById("playBtn");
+  const rect = btn.getBoundingClientRect();
 
-  const barWidth = (canvas.width / dataArray.length) * 0.7;
-  let x = 0;
+  // 🎯 start at play button center
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
 
-  dataArray.forEach((value, i) => {
-    const height = value / 2;
+  note.style.left = centerX + "px";
+  note.style.top = centerY + "px";
 
-    // 💗 Pink → Gold gradient
-    const gradient = ctx.createLinearGradient(0,0,0,canvas.height);
-    gradient.addColorStop(0,"#fb6f92");
-    gradient.addColorStop(1,"#f8e7c7");
+  // 🎵 beat = bigger + brighter
+  if (isBeat) {
+    note.style.fontSize = "22px";
+    note.style.color = "#fff";
+  } else {
+    note.style.fontSize = (14 + Math.random() * 10) + "px";
+  }
 
-    ctx.fillStyle = gradient;
-    ctx.fillRect(x, canvas.height - height, barWidth, height);
+  // 🎯 random swirl direction
+  note.style.setProperty("--x", (Math.random() * 120 - 60) + "px");
+  note.style.setProperty("--y", (-120 - Math.random() * 80) + "px");
+  note.style.setProperty("--rotate", (Math.random() * 360) + "deg");
 
-    x += barWidth + 3;
-  });
+  document.body.appendChild(note);
+
+  setTimeout(() => note.remove(), 3000);
 }
+let bassAvg = 0;
+
+
 
 /* ▶ PLAY */
 function playAudio() {
@@ -2421,16 +2495,75 @@ function playAudio() {
   isPlaying = true;
   playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
 
+  topNote.classList.add("active"); // ✅ activate note
+
   draw();
 }
 
-/* ⏸ PAUSE */
+
 function pauseAudio() {
   audio.pause();
   isPlaying = false;
   playBtn.innerHTML = '<i class="fa-solid fa-play"></i>';
-}
 
+  topNote.classList.remove("active"); // ✅ stop animation
+}
+let smoothBass = 0;
+function draw() {
+  if (!isPlaying) return;
+
+  requestAnimationFrame(draw);
+
+  analyser.getByteFrequencyData(dataArray);
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const barWidth = (canvas.width / dataArray.length) * 1.8;
+  let x = 0;
+
+  // ✅ DRAW VISUALIZER
+  for (let i = 0; i < dataArray.length; i++) {
+    const barHeight = dataArray[i];
+
+    ctx.fillStyle = `rgba(251, 111, 146, ${barHeight / 255})`;
+    ctx.fillRect(x, canvas.height - barHeight / 2, barWidth, barHeight / 2);
+
+    x += barWidth + 2;
+  }
+
+  /* ✅ ✅ REAL MUSIC REACTIVITY BELOW */
+
+  // 🎧 Get bass (low frequencies = beats)
+  let bass = 0;
+  const bassRange = 8; // lower frequencies = stronger beat
+
+  for (let i = 0; i < bassRange; i++) {
+    bass += dataArray[i];
+  }
+
+  bass /= bassRange;
+
+  // 🎯 Normalize
+  smoothBass = smoothBass * 0.8 + bass * 0.2; // smoothing
+const normalized = smoothBass / 255;
+
+
+  // ✅ Scale note based on bass
+  const scale = 1 + normalized * 0.8;
+  const lift = -normalized * 12;
+
+  topNote.style.transform = `translateY(${lift}px) scale(${scale})`;
+
+  // ✅ Glow stronger on louder beats
+  topNote.style.filter = `drop-shadow(0 0 ${6 + bass * 0.05}px rgba(251,111,146,0.9))`;
+
+  // ✅ OPTIONAL: generate floating notes on strong beat
+  const now = Date.now();
+  if (bass > 160 && now - lastBeat > 120) {
+    createMusicNote(true);
+    lastBeat = now;
+  }
+}
 /* 🎛 TOGGLE */
 playBtn.addEventListener("click", () => {
   if (isPlaying) {
@@ -2806,6 +2939,7 @@ const guestList = {
   "Dulay, Lynuel": 1,
   "Navarro Viel": 2,
   "Biscaro, Joyce": 2,
+  "Monroy, Wilson": 1,
   "Cabanban, Nathaniel": 1,
   "Mangon, Kimberly Krisel": 2,
   "Andino, Alexander": 1
