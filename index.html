@@ -2447,42 +2447,6 @@ function initAudio() {
   dataArray = new Uint8Array(bufferLength);
 }
 
-function createMusicNote(isBeat = false) {
-  const note = document.createElement("div");
-  note.className = "music-note";
-
-  const icons = ["♪","♫","♩","♬"];
-  note.textContent = icons[Math.floor(Math.random() * icons.length)];
-
-  const btn = document.getElementById("playBtn");
-  const rect = btn.getBoundingClientRect();
-
-  // 🎯 start at play button center
-  const centerX = rect.left + rect.width / 2;
-  const centerY = rect.top + rect.height / 2;
-
-  note.style.left = centerX + "px";
-  note.style.top = centerY + "px";
-
-  // 🎵 beat = bigger + brighter
-  if (isBeat) {
-    note.style.fontSize = "22px";
-    note.style.color = "#fff";
-  } else {
-    note.style.fontSize = (14 + Math.random() * 10) + "px";
-  }
-
-  // 🎯 random swirl direction
-  note.style.setProperty("--x", (Math.random() * 120 - 60) + "px");
-  note.style.setProperty("--y", (-120 - Math.random() * 80) + "px");
-  note.style.setProperty("--rotate", (Math.random() * 360) + "deg");
-
-  document.body.appendChild(note);
-
-  setTimeout(() => note.remove(), 3000);
-}
-let bassAvg = 0;
-
 
 
 /* ▶ PLAY */
