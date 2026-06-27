@@ -1250,7 +1250,7 @@ body {
 }
 
 .slides img {
-  height: 60vh;  /* 🔥 responsive height based on screen */
+  height: 60svh; /* ✅ stable on mobile */
 }
 @media (max-width: 480px) {
   .slides img {
@@ -2113,6 +2113,11 @@ grid-auto-columns: 250px;
       outline-offset: 4px;
     }
   }
+/* Works on both PC + Mobile */
+.gallery-grid img:active,
+.gallery-grid img:focus {
+  transform: scale(1.05);
+}
 
   
   /************* NAV BUTTONS(left and right) ************/
@@ -3024,30 +3029,42 @@ gridGallery.addEventListener("click", (e) => {
 <script>
 const carousel = document.querySelector(".wedding-carousel");
 
-let scrollAmount = 260; // width per slide
+let scrollAmount = 260;
 let delay = 3000;
 let autoScrollInterval;
 
-/* ✅ STEP 1: duplicate slides (for seamless loop) */
+/* ✅ STEP 1: duplicate slides */
 const slides = Array.from(carousel.children);
 slides.forEach(slide => {
   const clone = slide.cloneNode(true);
   carousel.appendChild(clone);
 });
 
-/* ✅ STEP 2: auto scroll */
+/* ✅ NEW: detect user interaction */
+let isUserInteracting = false;
+
+carousel.addEventListener("touchstart", () => isUserInteracting = true);
+carousel.addEventListener("touchend", () => {
+  setTimeout(() => isUserInteracting = false, 3000);
+});
+
+/* ✅ STEP 2: auto scroll (FIXED) */
 function startAutoScroll() {
   autoScrollInterval = setInterval(() => {
+
+    /* 🚫 STOP if user is swiping */
+    if (isUserInteracting) return;
+
     carousel.scrollBy({
       left: scrollAmount,
       behavior: "smooth"
     });
 
-    /* ✅ STEP 3: instant reset (invisible) */
+    /* ✅ seamless loop */
     if (carousel.scrollLeft >= carousel.scrollWidth / 2) {
       carousel.scrollTo({
         left: 0,
-        behavior: "auto" // ⚠ instant (no jump animation)
+        behavior: "auto"
       });
     }
 
