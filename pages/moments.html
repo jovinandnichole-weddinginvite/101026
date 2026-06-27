@@ -55,6 +55,14 @@ h4 {
 h1, h4 {
  font-family: "Parisienne", cursive;
  text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+ 
+}
+
+h1 {
+  color: #f5c0cd;
+  text-shadow:
+    0 2px 8px rgba(0,0,0,0.25),
+    0 0 10px rgba(251,111,146,0.6);
 }
 
 
@@ -1229,7 +1237,7 @@ body {
   z-index: -2;
 }
 .gallery-slider {
-  width: 100%;
+ margin-bottom: 10px;
 }
 @media (max-width: 480px) {
   h1 {
@@ -1937,189 +1945,479 @@ body.reveal-content .invite {
     filter: blur(0);
   }
 }
-
-/* 💗 Make ALL Entourage text pink */
-#entourageContent,
-#entourageContent * {
-  color: #fb6f92 !important;
+.carousel {
+  scroll-behavior: smooth;
+  scroll-padding-inline: 50%;
 }
-/* 💗 Entourage text color */
-#entourageContent p,
-#entourageContent h4,
-#entourageContent h3,
-#entourageContent h2,
-#entourageContent .entourage-heading,
-#entourageContent .entourage-center-title,
-#entourageContent .entourage-center-subtitle,
-#entourageContent strong {
-  color: #fb6f92;
-}
+@import url(https://fonts.bunny.net/css?family=jura:300,500);
+@layer base, demo;
 
-/* 💖 FORCE ALL TEXT TO #f5b2c3 */
-body,
-body * {
-  color: #f5b2c3 !important;
-}
+@layer demo {
 
-/* =========================
-   📸 SLIDESHOW MODAL
-   ========================= */
-.slideshow-modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.9);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  z-index: 99999;
-}
+.carousel{
+	/* prev & next buttons */
+  --nav-btn-size: 40px;
+  --nav-btn-bg: rgb(15, 23, 43);
+  --nav-btn-txt: white;
+  
+	/* item markers */
+  --nav-marker-bg: 20px;
+  --nav-marker-bg: rgb(15, 23, 43);
+  
+  width: min(calc(100% - 2rem), 700px);
+  list-style: none;
+  padding-block: 2rem; /* create space for drop shadows */
+  display: grid;
+  grid-auto-flow: column;
+grid-auto-columns: 250px;
+  gap:0;
+	@supports not selector(::scroll-marker-group) {
+		/* add gap for browsers that don't suppor ::scroll-* */
+		gap: 1rem;
+	}
+  anchor-name: --carousel;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behaviour-x: contain; 
+  scroll-behavior: smooth; /* keep things smooth (should probably be wihtin a prefers query) */
+  scrollbar-width: none;
 
-/* Show modal */
-.slideshow-modal.active {
-  display: flex;
-}
-
-/* Image */
-.slideshow-container {
-  position: relative;
-  max-width: 90%;
-}
-
-#slideImage {
-  width: 100%;
-  max-height: 75vh;
-  border-radius: 18px;
-  animation: fadeZoom 0.8s ease;
-}
-
-/* Animation */
-@keyframes fadeZoom {
-  from {
-    opacity: 0;
-    transform: scale(1.08);
+  /* empty pseudo elements to push first and last items to the middle */
+  &::before,
+  &::after{
+      content: '';
   }
-  to {
-    opacity: 1;
+  .carousel {
+  padding-inline: 40px;
+}
+  .carousel > div {
+  transition: transform 0.3s ease;
+}
+
+@container scroll-state(snapped: inline) {
+  .carousel > div {
     transform: scale(1);
   }
 }
 
-/* Close */
-.close-btn {
-  position: absolute;
-  top: 20px;
-  right: 30px;
-  font-size: 32px;
-  color: #fff;
-  cursor: pointer;
+@container not scroll-state(snapped: inline) {
+  .carousel > div {
+    transform: scale(0.9);
+  }
+}
+  /**************** MARKERS GROUP *******************/
+  /* the item markers will be dynamically placed within this element */
+  scroll-marker-group: after; /* place after elements*/
+  &::scroll-marker-group{
+    position: absolute;
+    position-anchor: --carousel;
+    inline-size: min(90cqi, 400px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    justify-self: center;
+    gap: .25rem;
+    padding-block-start: 1rem;
+    top: anchor( bottom );
+    left: calc(anchor(left) - 10%);
+    right: calc(anchor(right) - 10%);
+  }
+  /* carousel item*/
+  > div{
+    position: relative;
+    scroll-snap-align: center; /* centers snap */
+    scroll-snap-stop: always; /* ensures that the scroll stops at each element */
+    container-type: scroll-state; /* define container for child animations */
+     
+    display: grid;
+    grid-template-areas: 'img' 'title' 'desc';
+    text-align: center;
+		
+		/* scroll to this item on load */
+		&.scroll-start {
+				scroll-initial-target: nearest;
+		}
+    > * {
+      /*outline: 1px dashed red;*/
+    }
+    /* item title/name */
+    > h2{
+      grid-area: title;
+      margin: 1rem 0 0 0;
+			font-size: 1.3rem;
+			white-space: nowrap;
+      transition: all 300ms ease-in-out;
+      /* not current item */
+      @container not scroll-state(snapped: inline) {
+        scale: .5;
+        opacity: .5;
+        translate: 0 -100px;
+      }
+    }
+    > p{
+      grid-area: desc;
+      margin: 0;
+			white-space: nowrap;
+      transition: all 300ms ease-in-out;
+      @container not scroll-state(snapped: inline) {
+        scale: .5;
+        opacity: 0;
+        /*translate: 0 100px;*/
+      }
+    }
+    > .img{
+      grid-area: img;
+      width: 100%;
+      aspect-ratio:3/4;
+      transition: all 300ms ease-in-out;
+      transform-origin: center center;
+      /* not current item */
+      @container not scroll-state(snapped: inline) {
+        scale: .5;
+        opacity: .5;
+      }
+      & > img{
+        width:100%;
+        height: 100%;
+        object-fit:cover;
+        border-radius: 20px;
+        box-shadow: 0 10px 20px  rgba(0 0 0 / .25);
+      }
+      
+    }
+
+
+    /************** MARKERS **************/
+    &::scroll-marker{
+      content: ' ';
+      height:20px;
+      aspect-ratio: 1;
+      background-color: var(--nav-marker-bg);
+      border-radius:50%;
+      transition: 150ms ease-in-out;
+      scale: .75;
+      opacity: .25;
+    }
+    /* current item marker */
+    &::scroll-marker:target-current{
+      opacity: 1;
+      scale: 1;
+    }
+    /* hover and keyboard focus */
+    &::scroll-marker:where(:hover,:focus-visible){
+      opacity: 1;
+    }
+    /* keybaord focus-*/
+    &::scroll-marker:focus-visible{
+      outline: 1px dashed var(--nav-marker-bg);
+      outline-offset: 4px;
+    }
+  }
+
+  
+  /************* NAV BUTTONS(left and right) ************/
+  &::scroll-button(*){
+    position: absolute;
+    position-anchor: --carousel;
+    width: var(--nav-btn-size);
+    aspect-ratio: 1/1;
+    font: inherit;
+    background-color: var(--nav-btn-bg);
+    display: grid;
+    place-content: center;
+    color: #FFF;
+    border:none;
+    border-radius: 50%;
+    opacity: 0.7;
+    cursor: pointer;
+    transition: all 150ms ease-in-out;
+    outline: 1px dashed transparent;
+    outline-offset: 0px;
+  }
+  /* button - prev */
+/* ✅ CENTERED INSIDE CAROUSEL */
+.carousel::scroll-button(inline-start){
+  content: '❮';
+  left: 10px;          /* ✅ moved inward */
 }
 
-/* Arrows */
-.prev, .next {
-  position: absolute;
-  top: 110%;
-  background: none;
+.carousel::scroll-button(inline-end){
+  content: '❯';
+  right: 10px;         /* ✅ moved inward */
+}
+.carousel::scroll-button(*) {
+  top: 50%;
+  transform: translateY(-50%);
+}
+.carousel {
+  -webkit-overflow-scrolling: touch; /* ✅ smooth iOS swipe */
+  scroll-snap-type: x mandatory;
+  touch-action: pan-x;               /* ✅ allow horizontal swipe only */
+}
+
+  /* hover and keyboard focus */
+  &::scroll-button(*):not(:disabled):where(:hover,:focus-visible){
+    opacity: 1;
+    scale: 1.1;
+  }
+  /* keyboard focus*/
+  &::scroll-button(*):focus-visible{
+    outline: 1px dashed var(--nav-btn-bg);
+    outline-offset: 4px;
+  }
+  /* disabled */
+  &::scroll-button(*):disabled{
+    opacity: .25;
+    cursor: unset;
+  }
+}
+  
+  /* general styling not relevant for this demo */
+@layer base {
+	* {
+		box-sizing: border-box;
+	}
+	:root {
+		color-scheme: light dark;
+		--bg-dark: rgb(16, 24, 40);
+		--bg-light: rgb(248, 244, 238);
+		--txt-light: rgb(10, 10, 10);
+		--txt-dark: rgb(245, 245, 245););
+		--line-light: rgba(0 0 0 / .25);
+		--line-dark: rgba(255 255 255 / .25);
+    /*
+    --clr-bg: light-dark(var(--bg-light), var(--bg-dark));
+    --clr-txt: light-dark(var(--txt-light), var(--txt-dark));
+    --clr-lines: light-dark(var(--line-light), var(--line-dark));
+    */
+	}
  
+	body {
+		background-color: #FFF;
+		color: var(--txt-light);
+		min-height: 100svh;
+		margin: 0;
+		padding: 2rem;
+		font-family: "Jura", sans-serif;
+		font-size: 1rem;
+		line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+		& > * {
+			/*outline: 1px dashed red;*/
+		}
+	}
+	h1 {
+		margin: 0;
+		font-size: 1.2rem;
+	}
 
-
+	.msg-supports {
+		font-size: 0.8rem;
+		/*
+    @supports (animation-timeline: scroll()) {
+			display: none;
+		}
+    @supports (order:sibling-index()) {
+			display: none;
+		}
+    @supports (x: attr(x type(*))) {
+			display: none;
+		}
+    */
+    @supports selector(::scroll-marker-group) {
+			display: none;
+		}
+	}
+}
+.carousel > div::scroll-marker {
+  display: none;
 }
 
-.prev { left: -500px; }
-.next { right: -500px; }
-
-/* Dots */
-.dots-container {
-  margin-top: 14px;
+.carousel > div:nth-child(-n+3)::scroll-marker {
+  display: block;
 }
-
-.dot {
-  height: 10px;
-  width: 10px;
-  margin: 0 4px;
-  background: #bbb;
-  border-radius: 50%;
-  display: inline-block;
-  cursor: pointer;
-}
-
-.dot.active {
-  background: #fb6f92;
-}
-/* =========================
-   📸 SLIDER GALLERY
-   ========================= */
-
-.gallery-slider {
-  position: relative;
-  overflow: hidden;
-  border-radius: 18px;
-}
-
-/* ✅ STACK IMAGES */
-.slides {
-  position: relative;
-  width: 100%;
-  height: 400px;
-}
-
-/* ✅ ALL IMAGES OVERLAP */
-.slides img {
-  position: absolute;
+/* ✅ GRID GALLERY MODAL */
+.grid-gallery-modal {
+  position: fixed;
   inset: 0;
+  background: rgba(0,0,0,0.95);
+  display: none;
+  z-index: 999998;
+  overflow-y: auto;
+  padding: 60px 15px;
+}
+
+.grid-gallery-modal.active {
+  display: block;
+}
+
+.grid-container {
+  column-count: 3;
+  column-gap: 12px;
+  padding: 10px;
+}
+
+/* 📱 Tablet */
+@media (max-width: 768px) {
+  .grid-container {
+    column-count: 2;
+  }
+}
+
+/* 📱 Mobile */
+@media (max-width: 480px) {
+  .grid-container {
+    column-count: 2;
+  }
+}
+
+.grid-container img {
   width: 100%;
-  height: 100%;
+  margin-bottom: 12px;
+  border-radius: 14px;
+  display: block;
+  break-inside: avoid; /* ✅ prevent cuts */
+
+  cursor: pointer;
+
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ✨ Pinterest hover effect */
+.grid-container img:hover {
+  transform: scale(1.03);
+  box-shadow:
+    0 10px 25px rgba(0,0,0,0.4),
+    0 0 12px rgba(251,111,146,0.3);
+}
+
+
+.grid-container img {
+  width: 100%;
+  height: 120px;
   object-fit: cover;
-  border-radius: 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s;
+}
 
+.grid-container img:hover {
+  transform: scale(1.05);
+}
+.grid-container img {
   opacity: 0;
-  transform: scale(1.08); /* subtle zoom start */
-  transition: opacity 1.2s ease, transform 6s ease;
-
-  z-index: 1;
+  transform: translateY(20px);
+  animation: fadeMasonry 0.5s ease forwards;
 }
 
-/* ✅ ACTIVE IMAGE */
-.slides img.active {
-  opacity: 1;
-  transform: scale(1); /* slow zoom in */
-  z-index: 2;
+@keyframes fadeMasonry {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-
-
-
-
-.slide-prev:hover,
-.slide-next:hover {
-  background: rgba(251,111,146,0.8);
-}
-
-.slide-prev { left: 10px; }
-.slide-next { right: 10px; }
-.slides img {
-  animation: fadeZoom 4s ease;
-}
-
-
-.fullscreen-gallery.active img {
-  animation: fadeZoom 0.5s ease;
-}
-
+/* ✅ CLOSE BUTTON (X) */
 .close-fullscreen {
   position: absolute;
   top: 20px;
   right: 25px;
-  font-size: 34px;
-  color: #fff;
+
+  font-size: 32px;
+  color: white;
+
   cursor: pointer;
-  z-index: 100000;
-  transition: transform 0.2s ease, opacity 0.2s ease;
+  z-index: 999999;
+
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
+/* hover glow */
 .close-fullscreen:hover {
   transform: scale(1.2);
   opacity: 0.8;
 }
+.carousel-dots {
+  margin-top: 10px;
+}
+
+#viewAllBtn {
+  margin-top: 12px;
+}
+.carousel-wrapper {
+  position: relative;
+}
+
+/* ✅ FLOATING BUTTON */
+.floating-view-btn {
+  position: absolute;
+  bottom: 15px;          /* distance from bottom of carousel */
+  left: 50%;
+  transform: translateX(-50%);
+
+  padding: 10px 18px;
+  border-radius: 20px;
+  border: none;
+
+  background: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+
+  z-index: 5;
+
+  box-shadow:
+    0 8px 20px rgba(0,0,0,0.25);
+
+  transition: all 0.3s ease;
+}
+
+/* ✨ hover glow */
+.floating-view-btn:hover {
+  background: rgba(251,111,146,0.85);
+  transform: translateX(-50%) scale(1.05);
+}
+
+/* ✅ mobile tweak */
+@media (max-width: 480px) {
+  .floating-view-btn {
+    bottom: 10px;
+    font-size: 13px;
+    padding: 8px 14px;
+  }
+}
+/* ✨ Clickable text link */
+.view-all-link {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+
+  font-size: 14px;
+  color: white;
+  cursor: pointer;
+
+  text-decoration: underline;
+  text-underline-offset: 4px;
+
+  background: none;
+  border: none;
+
+  transition: all 0.25s ease;
+}
+
+/* hover effect */
+.view-all-link:hover {
+  color: #fb6f92;
+  text-shadow: 0 0 8px rgba(251,111,146,0.6);
+}
+
+
 </style>
 
 
@@ -2156,70 +2454,411 @@ body * {
   </div>
 
   <!-- PHOTOS -->
-<div class="gallery-slider">
-  <div class="slides">
-    <img src="../images/001.jpeg"alt="">
-    <img src="../images/002.jpeg"alt="">
-    <img src="../images/003.png"alt="">
-    <img src="../images/004.jpg"alt="">
-    <img src="../images/005.jpg"alt="">
-    <img src="../images/006.jpg"alt="">
-    <img src="../images/007.jpg"alt="">
-    <img src="../images/008.jpg"alt="">
-    <img src="../images/009.jpg"alt="">
-    <img src="../images/010.jpg"alt="">
-    <img src="../images/011.jpg"alt="">
-    <img src="../images/012.jpg"alt="">
-    <img src="../images/013.jpg"alt="">
-    <img src="../images/014.jpg"alt="">
-    <img src="../images/015.jpg"alt="">
-    <img src="../images/016.jpg"alt="">
-    <img src="../images/017.jpg"alt="">
-    <img src="../images/018.jpg"alt="">
-    <img src="../images/019.jpg"alt="">
-    <img src="../images/020.jpg"alt="">
-    <img src="../images/021.jpg"alt="">
-    <img src="../images/21.jpg"alt="">
-    <img src="../images/022.jpg"alt="">
-    <img src="../images/023.jpg"alt="">
-    <img src="../images/024.jpg"alt="">
-    <img src="../images/025.jpg"alt="">
-    <img src="../images/026.jpg"alt="">
-    <img src="../images/027.jpg"alt="">
-    <img src="../images/028.jpg"alt="">
-    <img src="../images/029.jpg"alt="">
-    <img src="../images/030.jpg"alt="">
-    <img src="../images/031.jpg"alt="">
-    <img src="../images/032.jpg"alt="">
-    <img src="../images/033.jpg"alt="">
-    <img src="../images/034.jpg"alt="">
-    <img src="../images/035.jpg"alt="">
-    <img src="../images/036.jpg"alt="">
-    <img src="../images/037.jpg"alt="">
-    <img src="../images/038.jpg"alt="">
-    <img src="../images/039.jpg"alt="">
-    <img src="../images/040.jpg"alt="">
-    <img src="../images/041.jpg"alt="">
-    <img src="../images/042.jpg"alt="">
-    <img src="../images/043.jpg"alt="">
-    <img src="../images/044.jpg"alt="">
-    <img src="../images/045.jpg"alt="">
-    <img src="../images/046.jpg"alt="">
-    <img src="../images/047.jpg"alt="">
-    <img src="../images/048.jpg"alt="">
-    <img src="../images/049.jpg"alt="">
-    <img src="../images/050.jpg"alt="">
-    <img src="../images/051.jpg"alt="">
-    <img src="../images/052.jpg"alt="">
-    <img src="../images/053.jpg"alt="">
-    <img src="../images/054.jpg"alt="">
-    <img src="../images/055.jpg"alt="">
-    <img src="../images/056.jpg"alt="">
-        <img src="../images/060.jpeg"alt="">
-        <img src="../images/061.jfif"alt="">
+<div class="gallery-slider modern">
 
+
+
+
+
+
+
+
+  
+
+  <!-- ✅ SLIDES -->
+
+<!-- ✅ CSS SCROLL CAROUSEL -->
+<section class="carousel wedding-carousel">
+
+  <div>
+
+    <div class="img">
+      <img src="../images/001.jpeg">
+    </div>
   </div>
 
+  <div>
+
+    <div class="img">
+      <img src="../images/002.jpeg">
+    </div>
+  </div>
+
+  <div class="scroll-start">
+
+    <div class="img">
+      <img src="../images/003.png">
+    </div>
+  </div>
+
+  <div>
+    <div class="img">
+      <img src="../images/004.jpg">
+    </div>
+  </div>
+
+  <div>
+    <div class="img">
+      <img src="../images/005.jpg">
+    </div>
+  </div>
+
+  <div>
+    <div class="img">
+      <img src="../images/006.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/007.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/008.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/009.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/010.png">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/011.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/012.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/013.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/014.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/015.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/016.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/017.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/018.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/019.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/020.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/021.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/21.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/022.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/023.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/024.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/025.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/026.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/027.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/028.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/029.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/030.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/031.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/032.jpg">
+    </div>
+  </div>
+
+
+   <div>
+    <div class="img">
+      <img src="../images/033.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/034.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/035.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/036.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/037.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/038.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/039.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/040.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/041.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/042.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/043.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/044.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/045.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/046.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/047.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/048.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/049.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/050.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/051.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/052.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/053.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/054.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/055.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/056.jpg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/060.jpeg">
+    </div>
+  </div>
+
+   <div>
+    <div class="img">
+      <img src="../images/061.jfif">
+    </div>
+  </div>
+
+</section>
+
+
+
+
+
+
+<!-- ✅ DOTS -->
+<div class="carousel-dots" id="carouselDots"></div>
+
+<div class="carousel-wrapper">
+
+  <section class="carousel wedding-carousel">
+    <!-- all your slides -->
+  </section>
+
+  <!-- ✅ FLOATING BUTTON -->
+
+<span id="viewAllBtn" class="view-all-link">
+  View All Photos
+</span>
+
+
+</div>
+
+
+
+</div>
+
+  <!-- ✅ DOTS -->
+  <div class="carousel-dots" id="carouselDots"></div>
 
 </div>
 
@@ -2236,193 +2875,198 @@ body * {
 
 
  <div class="nav-controls">
-    <button onclick="prevSlide()" class="nav-btn-modal">⟵</button>
-    <button onclick="nextSlide()" class="nav-btn-modal">⟶</button>
+    <button onclick="prevFullscreen()" class="nav-btn-modal">⟵</button>
+    <button onclick="nextFullscreen()" class="nav-btn-modal">⟶</button>
   </div>
 
 
 </div>
 
-<script>
-  const venueLinks = document.querySelectorAll(".venue-link");
+<div id="gridGallery" class="grid-gallery-modal">
+  <span id="closeGrid" class="close-fullscreen">&times;</span>
 
-  function revealVenues() {
-    const height = window.innerHeight;
-    venueLinks.forEach(link => {
-      const top = link.getBoundingClientRect().top;
-      if (top < height - 100) {
-        link.style.animationPlayState = "running";
-      }
-    });
-  }
-
-  window.addEventListener("scroll", revealVenues);
-  revealVenues();
-</script>
-
-  <div>
+  <div class="grid-container" id="gridContainer"></div>
+</div>
 
 
 <script>
 const fullscreen = document.getElementById("fullscreenGallery");
 const fullscreenImg = document.getElementById("fullscreenImg");
-const closeBtn = document.getElementById("closeFullscreen");
+const closeFullscreen = document.getElementById("closeFullscreen");
 
-const slideImages = document.querySelectorAll(".slides img");
+const carouselImages = document.querySelectorAll(".wedding-carousel img");
 
-let fullscreenIndex = 0;
+let currentIndex = 0;
 
-/* ✅ OPEN */
-slideImages.forEach((img, i) => {
-  img.addEventListener("click", () => {
-    fullscreenIndex = i;
+
+const viewAllBtn = document.getElementById("viewAllBtn");
+const gridGallery = document.getElementById("gridGallery");
+const gridContainer = document.getElementById("gridContainer");
+const closeGrid = document.getElementById("closeGrid");
+
+/* ✅ Populate grid automatically from carousel */
+carouselImages.forEach((img, index) => {
+  let clone = img.cloneNode();
+  
+/* ✅ Random height effect (Pinterest look) */
+clone.style.height = Math.floor(Math.random() * 150 + 150) + "px";
+clone.style.objectFit = "cover";
+
+  clone.addEventListener("click", () => {
+    // open fullscreen from grid
     fullscreen.classList.add("active");
-    updateFullscreen();
+    fullscreenImg.src = img.src;
+    currentIndex = index;
+  });
+
+  gridContainer.appendChild(clone);
+});
+
+/* ✅ OPEN GRID */
+viewAllBtn.onclick = () => {
+  gridGallery.classList.add("active");
+};
+
+/* ✅ CLOSE GRID */
+closeGrid.onclick = () => {
+  gridGallery.classList.remove("active");
+};
+
+
+/* OPEN FULLSCREEN */
+carouselImages.forEach((img, index) => {
+  img.addEventListener("click", () => {
+    fullscreen.classList.add("active");
+    fullscreenImg.src = img.src;
+    currentIndex = index;
   });
 });
 
-/* ✅ UPDATE */
-function updateFullscreen() {
-  fullscreenImg.src = slideImages[fullscreenIndex].src;
-}
-
-/* ✅ NAVIGATION FUNCTIONS */
-function nextSlide() {
-  fullscreenIndex = (fullscreenIndex + 1) % slideImages.length;
-  updateFullscreen();
-}
-
-function prevSlide() {
-  fullscreenIndex = (fullscreenIndex - 1 + slideImages.length) % slideImages.length;
-  updateFullscreen();
-}
-
-/* ✅ CLOSE */
-closeBtn.addEventListener("click", () => {
+/* CLOSE */
+closeFullscreen.onclick = () => {
   fullscreen.classList.remove("active");
-});
+};
 
-/* ✅ ESC */
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") fullscreen.classList.remove("active");
-});
-
-/* ✅ SWIPE FIX (REAL SWIPE) */
-let touchStartX = 0;
-
-fullscreen.addEventListener("touchstart", (e) => {
-  touchStartX = e.touches[0].clientX;
-});
-
-fullscreen.addEventListener("touchend", (e) => {
-  let touchEndX = e.changedTouches[0].clientX;
-  let diff = touchStartX - touchEndX;
-
-  if (Math.abs(diff) > 50) {  // ✅ threshold prevents accidental taps
-    if (diff > 0) {
-      nextSlide();   // swipe left
-    } else {
-      prevSlide();   // swipe right
-    }
-  }
-});
-
-/* ✅ CLICK LEFT / RIGHT (desktop support) */
-fullscreen.addEventListener("click", (e) => {
-  if (e.target === fullscreenImg) {
-    const clickX = e.clientX;
-
-    if (clickX < window.innerWidth / 2) {
-      prevSlide();
-    } else {
-      nextSlide();
-    }
-  }
-});
-</script>
-
-<script>
-const mainVideo = document.getElementById("mainVideo");
-
-mainVideo.addEventListener("click", () => {
-  if (mainVideo.requestFullscreen) {
-    mainVideo.requestFullscreen();
-  } else if (mainVideo.webkitRequestFullscreen) {
-    mainVideo.webkitRequestFullscreen();
-  }
-});
-</script>
-<script>
-window.addEventListener("load", () => {
-  const vid = document.getElementById("mainVideo");
-  vid.play().catch(() => {
-    console.log("Autoplay blocked (normal on some devices)");
-  });
-});
-</script>
-
-<script>
-const slides = document.querySelectorAll(".slides img");
-
-let index = 0;
-
-/* ✅ show first image */
-slides[index].classList.add("active");
-
-/* ✅ AUTO FADE SLIDE */
-function autoSlide() {
-  // remove current
-  slides[index].classList.remove("active");
-
-  // next index
-  index = (index + 1) % slides.length;
-
-  // show next
-  slides[index].classList.add("active");
+/* NEXT */
+function nextFullscreen() {
+  currentIndex = (currentIndex + 1) % carouselImages.length;
+  fullscreenImg.style.opacity = 0;
+  setTimeout(() => {
+    fullscreenImg.src = carouselImages[currentIndex].src;
+    fullscreenImg.style.opacity = 1;
+  }, 200);
 }
 
-/* ✅ RUN EVERY 4.5s */
-let slideInterval = setInterval(autoSlide, 4500);
+/* PREV */
+function prevFullscreen() {
+  currentIndex =
+    (currentIndex - 1 + carouselImages.length) %
+    carouselImages.length;
+  fullscreenImg.style.opacity = 0;
+  setTimeout(() => {
+    fullscreenImg.src = carouselImages[currentIndex].src;
+    fullscreenImg.style.opacity = 1;
+  }, 200);
+}
 
-/* ✅ PAUSE ON HOVER */
-const slider = document.querySelector(".gallery-slider");
-
-slider.addEventListener("mouseenter", () => {
-  clearInterval(slideInterval);
-});
-
-slider.addEventListener("mouseleave", () => {
-  slideInterval = setInterval(autoSlide, 4500);
-});
-</script>
-
-
-<script>
+/* ✅ IMPROVED SWIPE SUPPORT */
 let startX = 0;
+let startY = 0;
+let isSwiping = false;
 
-slidesContainer.addEventListener("touchstart", (e) => {
+fullscreen.addEventListener("touchstart", e => {
   startX = e.touches[0].clientX;
+  startY = e.touches[0].clientY;
+  isSwiping = true;
 });
 
-slidesContainer.addEventListener("touchend", (e) => {
-  let endX = e.changedTouches[0].clientX;
-  let diff = startX - endX;
+fullscreen.addEventListener("touchmove", e => {
+  if (!isSwiping) return;
 
-  if (Math.abs(diff) > 50) {
-    if (diff > 0) {
-      index = (index + 1) % slides.length;
-    } else {
-      index = (index - 1 + slides.length) % slides.length;
-    }
-    updateSlider();
+  let dx = e.touches[0].clientX - startX;
+  let dy = e.touches[0].clientY - startY;
+
+  /* ✅ Only react to horizontal swipe (ignore vertical scroll) */
+  if (Math.abs(dx) > Math.abs(dy)) {
+    e.preventDefault();
+  }
+}, { passive: false });
+
+fullscreen.addEventListener("touchend", e => {
+  if (!isSwiping) return;
+
+  let dx = e.changedTouches[0].clientX - startX;
+
+  /* ✅ swipe threshold */
+  if (dx < -60) {
+    nextFullscreen();   // swipe left
+  } else if (dx > 60) {
+    prevFullscreen();   // swipe right
+  }
+
+  isSwiping = false;
+});
+/* ✅ CLOSE when clicking outside image (fullscreen) */
+fullscreen.addEventListener("click", (e) => {
+  if (e.target === fullscreen) {
+    fullscreen.classList.remove("active");
+  }
+});
+
+/* ✅ CLOSE when clicking outside grid */
+gridGallery.addEventListener("click", (e) => {
+  if (e.target === gridGallery) {
+    gridGallery.classList.remove("active");
   }
 });
 </script>
 
+<script>
+const carousel = document.querySelector(".wedding-carousel");
 
+let scrollAmount = 260; // width per slide
+let delay = 3000;
+let autoScrollInterval;
 
+/* ✅ STEP 1: duplicate slides (for seamless loop) */
+const slides = Array.from(carousel.children);
+slides.forEach(slide => {
+  const clone = slide.cloneNode(true);
+  carousel.appendChild(clone);
+});
 
+/* ✅ STEP 2: auto scroll */
+function startAutoScroll() {
+  autoScrollInterval = setInterval(() => {
+    carousel.scrollBy({
+      left: scrollAmount,
+      behavior: "smooth"
+    });
 
+    /* ✅ STEP 3: instant reset (invisible) */
+    if (carousel.scrollLeft >= carousel.scrollWidth / 2) {
+      carousel.scrollTo({
+        left: 0,
+        behavior: "auto" // ⚠ instant (no jump animation)
+      });
+    }
+
+  }, delay);
+}
+
+function stopAutoScroll() {
+  clearInterval(autoScrollInterval);
+}
+
+/* ✅ START */
+startAutoScroll();
+
+/* ✅ Pause on hover/touch */
+carousel.addEventListener("mouseenter", stopAutoScroll);
+carousel.addEventListener("mouseleave", startAutoScroll);
+carousel.addEventListener("touchstart", stopAutoScroll);
+carousel.addEventListener("touchend", startAutoScroll);
+</script>
 
 
 </body>
