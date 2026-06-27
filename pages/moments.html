@@ -2171,7 +2171,27 @@ grid-auto-columns: 250px;
 
   padding: 10px 10%;
 }
+/* ✅ FIX: PERFECT CENTER ON MOBILE */
+@media (max-width: 480px) {
+  .carousel {
+    width: 100%;
+    margin: 0 auto;               /* center container */
 
+    grid-auto-columns: 85%;       /* card width */
+    
+    padding-left: 7.5%;           /* equal side space */
+    padding-right: 7.5%;
+
+    scroll-padding-inline: 7.5%;  /* ✅ key fix: aligns snap center */
+  }
+}
+@media (max-width: 480px) {
+  .carousel {
+    grid-auto-columns: 80%;
+    padding-inline: 10%;
+    scroll-padding-inline: 10%;
+  }
+}
   /* hover and keyboard focus */
   &::scroll-button(*):not(:disabled):where(:hover,:focus-visible){
     opacity: 1;
