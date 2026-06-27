@@ -2416,7 +2416,17 @@ grid-auto-columns: 250px;
   color: #fb6f92;
   text-shadow: 0 0 8px rgba(251,111,146,0.6);
 }
+/* ✅ FORCE MOBILE VIEW ON DESKTOP */
+body {
+  max-width: 420px;     /* typical mobile width */
+  margin: 0 auto;       /* center it */
+}
 
+html {
+  display: flex;
+  justify-content: center;
+  background: #000; /* optional background sides */
+}
 
 </style>
 
