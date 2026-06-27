@@ -1945,10 +1945,7 @@ body.reveal-content .invite {
     filter: blur(0);
   }
 }
-.carousel {
-  scroll-behavior: smooth;
-  scroll-padding-inline: 50%;
-}
+
 @import url(https://fonts.bunny.net/css?family=jura:300,500);
 @layer base, demo;
 
@@ -1987,11 +1984,16 @@ grid-auto-columns: 250px;
   &::after{
       content: '';
   }
-  .carousel {
-  padding-inline: 40px;
+
+.carousel > div {
+  scroll-snap-align: center;
+  flex-shrink: 0;
 }
-  .carousel > div {
-  transition: transform 0.3s ease;
+@media (max-width: 480px) {
+  .carousel {
+    grid-auto-columns: 85%;   /* ✅ larger, more centered */
+    padding: 10px 7%;
+  }
 }
 
 @container scroll-state(snapped: inline) {
@@ -2155,9 +2157,19 @@ grid-auto-columns: 250px;
   transform: translateY(-50%);
 }
 .carousel {
-  -webkit-overflow-scrolling: touch; /* ✅ smooth iOS swipe */
+  display: grid;
+  grid-auto-flow: column;
+
+  /* ✅ auto responsive card size */
+  grid-auto-columns: 80%;
+
+  gap: 12px;
+
+  overflow-x: auto;
   scroll-snap-type: x mandatory;
-  touch-action: pan-x;               /* ✅ allow horizontal swipe only */
+  scroll-padding-inline: 10%;
+
+  padding: 10px 10%;
 }
 
   /* hover and keyboard focus */
@@ -2421,8 +2433,20 @@ grid-auto-columns: 250px;
   color: #fb6f92;
   text-shadow: 0 0 8px rgba(251,111,146,0.6);
 }
+.carousel > div {
+  transition: transform 0.3s ease;
+}
 
+.carousel > div:not(:hover) {
+  transform: scale(0.95);
+}
+.carousel {
+  scroll-behavior: smooth;
+}
 
+.carousel::-webkit-scrollbar {
+  display: none;
+}
 </style>
 
 
@@ -2845,9 +2869,7 @@ grid-auto-columns: 250px;
 
 <div class="carousel-wrapper">
 
-  <section class="carousel wedding-carousel">
-    <!-- all your slides -->
-  </section>
+
 
   <!-- ✅ FLOATING BUTTON -->
 
