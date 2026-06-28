@@ -2386,7 +2386,6 @@ body.reveal-content .invite {
 
   transition: all 0.3s ease;
 }
-
 @media (max-width: 480px) {
   .carousel > div {
     flex: 0 0 85%;
@@ -2408,6 +2407,10 @@ body {
 
 .carousel {
   max-width: 100%;
+}
+.carousel {
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: 12px; /* ✅ keeps center aligned */
 }
 
 </style>
