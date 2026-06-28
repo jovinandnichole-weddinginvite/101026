@@ -2154,7 +2154,6 @@ body.reveal-content .invite {
 
 .carousel > div {
   transform: scale(0.96);
-  margin-inline: auto;
 }
 
 .carousel > div.active {
@@ -2353,7 +2352,6 @@ body.reveal-content .invite {
     0 0 70px rgba(251,111,146,0.25);
 }
 .carousel {
-  scroll-padding-inline: 50%;
   scroll-behavior: smooth;
 
   /* ✅ Better natural inertia */
@@ -2412,19 +2410,32 @@ body {
 }
 .carousel {
   scroll-snap-type: x mandatory;
-
+  scroll-padding-inline: 12px; /* ✅ keeps center aligned */
 }
 @media (max-width: 480px) {
   .carousel {
-    scroll-padding-inline: 0;        /* ✅ fix snap centering */
-    justify-content: center;         /* ✅ extra safe */
+    scroll-snap-type: x mandatory;
+    scroll-padding-left: 6%;
+    scroll-padding-right: 6%;
+  }
+
+  .carousel > div {
+    scroll-snap-align: center;
+    scroll-snap-stop: always; /* ✅ stronger snap */
   }
 }
-
 @media (max-width: 480px) {
-  .carousel {
-    scroll-padding-inline: 0;
+  .carousel > div {
+    flex: 0 0 80%;   /* ✅ better symmetry */
+    margin: 0 auto;  /* ✅ centers slide */
   }
+}
+.carousel {
+  scroll-behavior: smooth;
+}
+
+.carousel > div {
+  scroll-snap-stop: always;
 }
 </style>
 
@@ -3042,7 +3053,36 @@ carousel.addEventListener("scroll", () => {
     ticking = true;
   }
 });
+let snapTimeout;
 
+carousel.addEventListener("scroll", () => {
+  clearTimeout(snapTimeout);
+
+  snapTimeout = setTimeout(() => {
+    const slides = carousel.querySelectorAll(":scope > div");
+    const center = carousel.scrollLeft + carousel.clientWidth / 2;
+
+    let closest = null;
+    let minDistance = Infinity;
+
+    slides.forEach(slide => {
+      const slideCenter = slide.offsetLeft + slide.offsetWidth / 2;
+      const dist = Math.abs(center - slideCenter);
+
+      if (dist < minDistance) {
+        minDistance = dist;
+        closest = slide;
+      }
+    });
+
+    if (closest) {
+      carousel.scrollTo({
+        left: closest.offsetLeft - carousel.clientWidth / 2 + closest.offsetWidth / 2,
+        behavior: "smooth"
+      });
+    }
+  }, 120);
+});
 /* init */
 updateActiveSlide();
 
