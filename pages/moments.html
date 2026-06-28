@@ -2154,6 +2154,7 @@ body.reveal-content .invite {
 
 .carousel > div {
   transform: scale(0.96);
+  margin-inline: auto;
 }
 
 .carousel > div.active {
@@ -2410,9 +2411,22 @@ body {
 }
 .carousel {
   scroll-snap-type: x mandatory;
-  scroll-padding-inline: 12px; /* ✅ keeps center aligned */
+  scroll-padding-inline: 0; /* ✅ keeps center aligned */
+}
+@media (max-width: 480px) {
+  .carousel {
+    padding: 20px 0;                 /* ✅ remove side padding */
+    scroll-padding-inline: 0;        /* ✅ fix snap centering */
+    justify-content: center;         /* ✅ extra safe */
+  }
 }
 
+@media (max-width: 480px) {
+  .carousel {
+    padding: 20px 0;
+    scroll-padding-inline: 0;
+  }
+}
 </style>
 
 
