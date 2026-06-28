@@ -2386,6 +2386,61 @@ body.reveal-content .invite {
 
   transition: all 0.3s ease;
 }
+
+
+/* ================================
+   ✅ FORCE DESKTOP VIEW ON MOBILE
+   ================================ */
+
+@media (max-width: 480px) {
+
+  /* Keep same container spacing */
+  body {
+    padding: 20px !important;
+  }
+
+  .invite {
+    max-width: 700px !important;
+    padding: 16px 20px !important;
+  }
+
+  /* Keep carousel same size as desktop */
+  .carousel > div {
+    flex: 0 0 70% !important;
+    height: 400px !important;
+  }
+
+  /* Keep images same height as PC */
+  .slides img,
+  .gallery-item.video video {
+    height: 400px !important;
+  }
+
+  /* Remove smaller mobile scaling */
+  .carousel > div.active {
+    transform: scale(1.05) !important;
+  }
+
+  .carousel > div {
+    transform: scale(0.96) !important;
+  }
+
+  /* Keep spacing identical */
+  .carousel {
+    padding: 40px 14% !important;
+    gap: 18px !important;
+  }
+
+}
+
+@media (max-width: 480px) {
+  body {
+    transform: scale(0.75);
+    transform-origin: top center;
+    width: 133%;
+  }
+}
+
 </style>
 
 
