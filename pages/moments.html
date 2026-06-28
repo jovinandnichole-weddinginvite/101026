@@ -1272,7 +1272,17 @@ body {
   height: 100%;
   object-fit: contain;
 
-  animation: fadeZoom 0.8s ease;
+  opacity: 0;
+  transform: scale(0.95);
+
+  transition: 
+    opacity 0.35s ease,
+    transform 0.35s ease;
+}
+
+.fullscreen-gallery.active img {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .slides img {
@@ -2437,6 +2447,25 @@ body {
 .carousel > div {
   scroll-snap-stop: always;
 }
+.fullscreen-gallery {
+  will-change: opacity;
+}
+
+.fullscreen-gallery img {
+  will-change: transform, opacity;
+}
+
+.fullscreen-gallery img {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.35s ease, transform 0.35s ease;
+}
+
+.fullscreen-gallery.active img {
+  opacity: 1;
+  transform: scale(1);
+}
+
 </style>
 
 
@@ -2943,31 +2972,24 @@ carouselImages.forEach((img, index) => {
   });
 });
 
-/* CLOSE */
 closeFullscreen.onclick = () => {
-  fullscreen.classList.remove("active");
+  fullscreenImg.style.opacity = 0;
+  fullscreenImg.style.transform = "scale(0.95)";
+
+  setTimeout(() => {
+    fullscreen.classList.remove("active");
+  }, 300);
 };
 
 /* NEXT */
 function nextFullscreen() {
-  currentIndex = (currentIndex + 1) % carouselImages.length;
-  fullscreenImg.style.opacity = 0;
-  setTimeout(() => {
-    fullscreenImg.src = carouselImages[currentIndex].src;
-    fullscreenImg.style.opacity = 1;
-  }, 200);
+  changeImage((currentIndex + 1) % carouselImages.length);
 }
 
-/* PREV */
 function prevFullscreen() {
-  currentIndex =
-    (currentIndex - 1 + carouselImages.length) %
-    carouselImages.length;
-  fullscreenImg.style.opacity = 0;
-  setTimeout(() => {
-    fullscreenImg.src = carouselImages[currentIndex].src;
-    fullscreenImg.style.opacity = 1;
-  }, 200);
+  changeImage(
+    (currentIndex - 1 + carouselImages.length) % carouselImages.length
+  );
 }
 
 /* ✅ IMPROVED SWIPE SUPPORT */
