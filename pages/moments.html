@@ -2388,26 +2388,24 @@ body.reveal-content .invite {
 }
 
 @media (max-width: 480px) {
+  .carousel {
+    padding: 20px 0;   /* ✅ remove side spacing */
+  }
+
   .carousel > div {
-    flex: 0 0 85%;
+    flex: 0 0 92%;     /* ✅ wider, less "centered look" */
     height: 260px;
+    margin: 0 auto;    /* ✅ keeps it balanced */
   }
 
   .slides img,
   .gallery-item.video video {
     height: 260px;
   }
-
-  .carousel {
-    padding: 20px 6%;
-  }
-}
-body {
-  overflow-x: hidden;
 }
 
 .carousel {
-  max-width: 100%;
+  scroll-padding-left: 0;
 }
 
 </style>
