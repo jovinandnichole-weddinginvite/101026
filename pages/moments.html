@@ -116,11 +116,10 @@ h1 {
 }
 
 
-  /* ✅ Transparent look */
+input, select, textarea {
   background: rgba(255,255,255,0.08);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-
   color: #fb6f92;
 
   box-shadow:
@@ -128,14 +127,13 @@ h1 {
     0 6px 18px rgba(0,0,0,0.15);
 
   transition: all 0.3s ease;
-
-  select {
+}
+select {
   appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg fill='%23fb6f92' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+  background-image: url("data:image/svg+xml,%3Csvg fill='%23fb6f92' height='20' viewBox='0 0 24 24' width='20'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 10px center;
 }
-
 input:focus,
 select:focus,
 textarea:focus {
@@ -226,8 +224,7 @@ font-family: "Playfair Display", serif !important;
   width: 100%;
   opacity: 0.9;
   margin-bottom: -5px; /* pulls the names closer to the logo */
-  margin-bottom: -5px;
-
+  
 
   /* optional soft entrance */
   animation: fadeLogo 1.2s ease;
@@ -448,7 +445,7 @@ font-family: "Playfair Display", serif !important;
   .tl-icon {
     font-size: 24px;
   }
-}
+
 @media (max-width: 360px) {
   .tl-item {
     padding: 12px 14px;
@@ -1012,13 +1009,12 @@ i,
     transform: translateY(0);
   }
 }
-
-/* Subtle icon float */
-@keyframes iconFloat {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
+.carousel {
+  position: relative;
 }
-
+.carousel img {
+  display: block;
+}
 .reveal {
   opacity: 0;
   transform: translateY(30px) translateX(-8px);
@@ -1294,8 +1290,6 @@ body {
   }
 }
 .invite {
-  background:
-background: rgba(255,255,255,0.08); /* very light glass */
   max-width: 700px;
   width: 100%;
   padding: 16px 20px;   /* reduce from 24px */
@@ -1922,8 +1916,6 @@ button:hover {
 }
 
 
-
-}
 /* ===============================
    ✨ BODY REVEAL AFTER INTRO
    =============================== */
@@ -1946,288 +1938,6 @@ body.reveal-content .invite {
   }
 }
 
-@import url(https://fonts.bunny.net/css?family=jura:300,500);
-@layer base, demo;
-
-@layer demo {
-
-.carousel{
-	/* prev & next buttons */
-  --nav-btn-size: 40px;
-  --nav-btn-bg: rgb(15, 23, 43);
-  --nav-btn-txt: white;
-  
-	/* item markers */
-  --nav-marker-bg: 20px;
-  --nav-marker-bg: rgb(15, 23, 43);
-  
-  width: min(calc(100% - 2rem), 700px);
-  list-style: none;
-  padding-block: 2rem; /* create space for drop shadows */
-  display: grid;
-  grid-auto-flow: column;
-grid-auto-columns: 250px;
-  gap:0;
-	@supports not selector(::scroll-marker-group) {
-		/* add gap for browsers that don't suppor ::scroll-* */
-		gap: 1rem;
-	}
-  anchor-name: --carousel;
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  overscroll-behaviour-x: contain; 
-  scroll-behavior: smooth; /* keep things smooth (should probably be wihtin a prefers query) */
-  scrollbar-width: none;
-
-  /* empty pseudo elements to push first and last items to the middle */
-  &::before,
-  &::after{
-      content: '';
-  }
-
-.carousel > div {
-  scroll-snap-align: center;
-  flex-shrink: 0;
-}
-@media (max-width: 480px) {
-  .carousel {
-    grid-auto-columns: 85%;   /* ✅ larger, more centered */
-    padding: 10px 7%;
-  }
-}
-
-@container scroll-state(snapped: inline) {
-  .carousel > div {
-    transform: scale(1);
-  }
-}
-
-@container not scroll-state(snapped: inline) {
-  .carousel > div {
-    transform: scale(0.9);
-  }
-}
-  /**************** MARKERS GROUP *******************/
-  /* the item markers will be dynamically placed within this element */
-  scroll-marker-group: after; /* place after elements*/
-  &::scroll-marker-group{
-    position: absolute;
-    position-anchor: --carousel;
-    inline-size: min(90cqi, 400px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    justify-self: center;
-    gap: .25rem;
-    padding-block-start: 1rem;
-    top: anchor( bottom );
-    left: calc(anchor(left) - 10%);
-    right: calc(anchor(right) - 10%);
-  }
-  /* carousel item*/
-  > div{
-    position: relative;
-    scroll-snap-align: center; /* centers snap */
-    scroll-snap-stop: always; /* ensures that the scroll stops at each element */
-    container-type: scroll-state; /* define container for child animations */
-     
-    display: grid;
-    grid-template-areas: 'img' 'title' 'desc';
-    text-align: center;
-		
-		/* scroll to this item on load */
-		&.scroll-start {
-				scroll-initial-target: nearest;
-		}
-    > * {
-      /*outline: 1px dashed red;*/
-    }
-    /* item title/name */
-    > h2{
-      grid-area: title;
-      margin: 1rem 0 0 0;
-			font-size: 1.3rem;
-			white-space: nowrap;
-      transition: all 300ms ease-in-out;
-      /* not current item */
-      @container not scroll-state(snapped: inline) {
-        scale: .5;
-        opacity: .5;
-        translate: 0 -100px;
-      }
-    }
-    > p{
-      grid-area: desc;
-      margin: 0;
-			white-space: nowrap;
-      transition: all 300ms ease-in-out;
-      @container not scroll-state(snapped: inline) {
-        scale: .5;
-        opacity: 0;
-        /*translate: 0 100px;*/
-      }
-    }
-    > .img{
-      grid-area: img;
-      width: 100%;
-      aspect-ratio:3/4;
-      transition: all 300ms ease-in-out;
-      transform-origin: center center;
-      /* not current item */
-      @container not scroll-state(snapped: inline) {
-        scale: .5;
-        opacity: .5;
-      }
-      & > img{
-        width:100%;
-        height: 100%;
-        object-fit:cover;
-        border-radius: 20px;
-        box-shadow: 0 10px 20px  rgba(0 0 0 / .25);
-      }
-      
-    }
-
-
-    /************** MARKERS **************/
-    &::scroll-marker{
-      content: ' ';
-      height:20px;
-      aspect-ratio: 1;
-      background-color: var(--nav-marker-bg);
-      border-radius:50%;
-      transition: 150ms ease-in-out;
-      scale: .75;
-      opacity: .25;
-    }
-    /* current item marker */
-    &::scroll-marker:target-current{
-      opacity: 1;
-      scale: 1;
-    }
-    /* hover and keyboard focus */
-    &::scroll-marker:where(:hover,:focus-visible){
-      opacity: 1;
-    }
-    /* keybaord focus-*/
-    &::scroll-marker:focus-visible{
-      outline: 1px dashed var(--nav-marker-bg);
-      outline-offset: 4px;
-    }
-  }
-/* Works on both PC + Mobile */
-.gallery-grid img:active,
-.gallery-grid img:focus {
-  transform: scale(1.05);
-}
-
-  
-  /************* NAV BUTTONS(left and right) ************/
-  &::scroll-button(*){
-    position: absolute;
-    position-anchor: --carousel;
-    width: var(--nav-btn-size);
-    aspect-ratio: 1/1;
-    font: inherit;
-    background-color: var(--nav-btn-bg);
-    display: grid;
-    place-content: center;
-    color: #FFF;
-    border:none;
-    border-radius: 50%;
-    opacity: 0.7;
-    cursor: pointer;
-    transition: all 150ms ease-in-out;
-    outline: 1px dashed transparent;
-    outline-offset: 0px;
-  }
-  /* button - prev */
-/* ✅ CENTERED INSIDE CAROUSEL */
-.carousel::scroll-button(inline-start){
-  content: '❮';
-  left: 10px;          /* ✅ moved inward */
-}
-
-.carousel::scroll-button(inline-end){
-  content: '❯';
-  right: 10px;         /* ✅ moved inward */
-}
-.carousel::scroll-button(*) {
-  top: 50%;
-  transform: translateY(-50%);
-}
-.carousel {
-  display: grid;
-  grid-auto-flow: column;
-
-  /* ✅ auto responsive card size */
-  grid-auto-columns: 80%;
-
-  gap: 12px;
-
-  overflow-x: auto;
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: 10%;
-
-  padding: 10px 10%;
-}
-/* ✅ FIX: PERFECT CENTER ON MOBILE */
-@media (max-width: 480px) {
-  .carousel {
-    width: 100%;
-    margin: 0 auto;               /* center container */
-
-    grid-auto-columns: 85%;       /* card width */
-    
-    padding-left: 7.5%;           /* equal side space */
-    padding-right: 7.5%;
-
-    scroll-padding-inline: 7.5%;  /* ✅ key fix: aligns snap center */
-  }
-}
-@media (max-width: 480px) {
-  .carousel {
-    grid-auto-columns: 80%;
-    padding-inline: 10%;
-    scroll-padding-inline: 10%;
-  }
-}
-  /* hover and keyboard focus */
-  &::scroll-button(*):not(:disabled):where(:hover,:focus-visible){
-    opacity: 1;
-    scale: 1.1;
-  }
-  /* keyboard focus*/
-  &::scroll-button(*):focus-visible{
-    outline: 1px dashed var(--nav-btn-bg);
-    outline-offset: 4px;
-  }
-  /* disabled */
-  &::scroll-button(*):disabled{
-    opacity: .25;
-    cursor: unset;
-  }
-}
-  
-  /* general styling not relevant for this demo */
-@layer base {
-	* {
-		box-sizing: border-box;
-	}
-	:root {
-		color-scheme: light dark;
-		--bg-dark: rgb(16, 24, 40);
-		--bg-light: rgb(248, 244, 238);
-		--txt-light: rgb(10, 10, 10);
-		--txt-dark: rgb(245, 245, 245););
-		--line-light: rgba(0 0 0 / .25);
-		--line-dark: rgba(255 255 255 / .25);
-    /*
-    --clr-bg: light-dark(var(--bg-light), var(--bg-dark));
-    --clr-txt: light-dark(var(--txt-light), var(--txt-dark));
-    --clr-lines: light-dark(var(--line-light), var(--line-dark));
-    */
-	}
  
 	body {
 		background-color: #FFF;
@@ -2243,9 +1953,7 @@ grid-auto-columns: 250px;
     align-items: center;
     justify-content: center;
     gap: 2rem;
-		& > * {
-			/*outline: 1px dashed red;*/
-		}
+		& > * 
 	}
 	h1 {
 		margin: 0;
@@ -2269,14 +1977,6 @@ grid-auto-columns: 250px;
 			display: none;
 		}
 	}
-}
-.carousel > div::scroll-marker {
-  display: none;
-}
-
-.carousel > div:nth-child(-n+3)::scroll-marker {
-  display: block;
-}
 /* ✅ GRID GALLERY MODAL */
 .grid-gallery-modal {
   position: fixed;
@@ -2430,10 +2130,11 @@ grid-auto-columns: 250px;
 }
 /* ✨ Clickable text link */
 .view-all-link {
-  position: absolute;
-  bottom: 15px;
-  left: 50%;
-  transform: translateX(-50%);
+  display: inline-block;   /* ✅ behaves like a normal block */
+  margin-top: 12px;        /* ✅ space below carousel */
+  
+  position: static;        /* ✅ remove absolute positioning */
+  transform: none;
 
   font-size: 14px;
   color: white;
@@ -2448,24 +2149,242 @@ grid-auto-columns: 250px;
   transition: all 0.25s ease;
 }
 
-/* hover effect */
-.view-all-link:hover {
-  color: #fb6f92;
-  text-shadow: 0 0 8px rgba(251,111,146,0.6);
-}
+
+
+
 .carousel > div {
-  transition: transform 0.3s ease;
+  transform: scale(0.96);
 }
 
-.carousel > div:not(:hover) {
-  transform: scale(0.95);
+.carousel > div.active {
+  transform: scale(1.04);
+}
+/* 🎬 NETFLIX-STYLE CAROUSEL */
+.carousel {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  gap: 18px;
+
+  padding: 40px 14%;
+  scroll-behavior: smooth;
+
+  perspective: 1200px; /* ✅ 3D depth */
+}
+
+/* hide scrollbar */
+.carousel::-webkit-scrollbar {
+  display: none;
+}
+
+/* 🎞 slide base */
+.carousel > div {
+  flex: 0 0 70%;
+  scroll-snap-align: center;
+
+  transition:
+    transform 0.5s ease,
+    filter 0.5s ease,
+    opacity 0.5s ease;
+
+  filter: blur(2px) brightness(0.75);
+  opacity: 0.6;
+}
+
+/* 🎯 CENTER (ACTIVE) */
+.carousel > div.active {
+  transform: scale(1.05) rotateY(0deg);
+  filter: blur(0) brightness(1);
+  opacity: 1;
+  z-index: 3;
+}
+
+/* 🧊 EDGE FADE EFFECT (Netflix style) */
+.carousel::before,
+.carousel::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  z-index: 5;
+  display: none;
+  pointer-events: none;
+}
+
+.carousel::before {
+  background: linear-gradient(to right, rgba(0,0,0,0.4), transparent);
+}
+
+.carousel::after {
+  background: linear-gradient(to left, rgba(0,0,0,0.4), transparent);
+}
+
+/* images */
+.carousel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 20px;
+
+  box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+}
+@media (max-width: 768px) {
+  .carousel {
+    padding: 30px 10%;
+  }
+
+  .carousel > div {
+    flex: 0 0 82%;
+  }
+}
+
+@media (max-width: 480px) {
+  .carousel {
+    padding: 20px 6%;
+    gap: 12px;
+  }
+
+  .carousel > div {
+    flex: 0 0 88%;
+
+    transform: scale(0.9); /* less aggressive on mobile */
+  }
+
+  .carousel > div.active {
+    transform: scale(1.02);
+  }
+}
+.carousel > div {
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+
+}
+.carousel > div {
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.carousel img {
+  backface-visibility: hidden;
+}
+.carousel > div {
+  will-change: transform;
+}
+/* 🔥 FORCE SAME SIZE FOR ALL CAROUSEL ITEMS */
+.carousel > div {
+  flex: 0 0 70%;
+  height: 400px;          /* ✅ FIXED HEIGHT */
+  display: flex;
+}
+
+.carousel .img {
+  width: 100%;
+  height: 100%;
+}
+
+/* 🔥 IMAGE FILLS CONTAINER */
+.carousel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;      /* crop properly */
+  border-radius: 20px;
+}
+@media (max-width: 480px) {
+  .carousel > div {
+    height: 280px;   /* consistent smaller height */
+  }
+}
+.carousel > div {
+  aspect-ratio: 4 / 5;  /* 🔥 consistent shape */
+}
+.carousel {
+  background: transparent !important;
+}
+.gallery-slider,
+.moments-gallery,
+.invite {
+  background: transparent !important;
+}
+.video-overlay {
+  background: rgba(0, 0, 0, 0.35);
+}
+
+/* ✅ FORCE TRUE TRANSPARENCY */
+.carousel,
+.wedding-carousel,
+.carousel > div,
+.carousel .img {
+  background: transparent !important;
+}
+
+/* ✅ REMOVE fake background effects */
+.carousel::before,
+.carousel::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* ✅ OPTIONAL: remove heavy shadow (looks like background) */
+.carousel img {
+  box-shadow: none !important;
+}
+
+/* ✅ OPTIONAL: remove dimming that looks like overlay */
+.carousel > div {
+  opacity: 1 !important;
+}
+.carousel > div img {
+  transition: all 0.4s ease;
+}
+
+/* base */
+.carousel > div img {
+  box-shadow:
+    0 10px 25px rgba(0,0,0,0.2);
+}
+
+/* active glow */
+.carousel > div.active img {
+  transform: scale(1.03);
+  box-shadow:
+    0 20px 40px rgba(0,0,0,0.25),
+    0 0 30px rgba(251,111,146,0.35),
+    0 0 70px rgba(251,111,146,0.25);
 }
 .carousel {
   scroll-behavior: smooth;
+
+  /* ✅ Better natural inertia */
+  -webkit-overflow-scrolling: touch;
+
+  /* ✅ smoother snap */
+  scroll-snap-type: x mandatory;
 }
 
-.carousel::-webkit-scrollbar {
-  display: none;
+/* optional: soften snapping feel */
+.carousel > div {
+  scroll-snap-align: center;
+  scroll-snap-stop: normal; /* prevents harsh locking */
+}
+
+#viewAllBtn {
+  width: auto;           /* 🔑 THIS fixes full width */
+  display: inline-block; /* keeps it compact */
+
+  font-family: "Playfair Display", serif !important;
+  font-size: 14px;
+  color: #e4b3b3;
+
+  padding: 6px 14px;
+  border-radius: 14px;
+
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  cursor: pointer;
+
+  transition: all 0.3s ease;
 }
 </style>
 
@@ -2882,32 +2801,16 @@ grid-auto-columns: 250px;
 
 
 
-
-
-<!-- ✅ DOTS -->
-<div class="carousel-dots" id="carouselDots"></div>
-
-<div class="carousel-wrapper">
-
-
-
-  <!-- ✅ FLOATING BUTTON -->
-
-<span id="viewAllBtn" class="view-all-link">
+<button id="viewAllBtn" class="view-all-glass">
   View All Photos
-</span>
+</button>
 
-
-</div>
 
 
 
 </div>
-
-  <!-- ✅ DOTS -->
-  <div class="carousel-dots" id="carouselDots"></div>
-
 </div>
+
 
 
 <div class="nav-buttons">
@@ -3071,6 +2974,38 @@ gridGallery.addEventListener("click", (e) => {
 <script>
 const carousel = document.querySelector(".wedding-carousel");
 
+/* ✅ ACTIVE CENTER SLIDE */
+function updateActiveSlide() {
+  const slides = carousel.querySelectorAll(":scope > div");
+  const center = carousel.scrollLeft + carousel.clientWidth / 2;
+
+  slides.forEach(slide => {
+    const slideCenter = slide.offsetLeft + slide.offsetWidth / 2;
+
+    const distance = Math.abs(center - slideCenter);
+
+    if (distance < slide.offsetWidth / 2) {
+      slide.classList.add("active");
+    } else {
+      slide.classList.remove("active");
+    }
+  });
+}
+let ticking = false;
+
+carousel.addEventListener("scroll", () => {
+  if (!ticking) {
+    requestAnimationFrame(() => {
+      updateActiveSlide();
+      ticking = false;
+    });
+    ticking = true;
+  }
+});
+
+/* init */
+updateActiveSlide();
+
 let scrollAmount = 260;
 let delay = 3000;
 let autoScrollInterval;
@@ -3097,18 +3032,15 @@ function startAutoScroll() {
     /* 🚫 STOP if user is swiping */
     if (isUserInteracting) return;
 
-    carousel.scrollBy({
-      left: scrollAmount,
-      behavior: "smooth"
-    });
+carousel.scrollBy({
+  left: scrollAmount,
+  behavior: "smooth"
+});
 
-    /* ✅ seamless loop */
-    if (carousel.scrollLeft >= carousel.scrollWidth / 2) {
-      carousel.scrollTo({
-        left: 0,
-        behavior: "auto"
-      });
-    }
+
+if (carousel.scrollLeft >= carousel.scrollWidth / 2) {
+  carousel.scrollLeft = 0;
+}
 
   }, delay);
 }
@@ -3120,11 +3052,23 @@ function stopAutoScroll() {
 /* ✅ START */
 startAutoScroll();
 
-/* ✅ Pause on hover/touch */
+/* 🖱 Desktop hover */
 carousel.addEventListener("mouseenter", stopAutoScroll);
 carousel.addEventListener("mouseleave", startAutoScroll);
-carousel.addEventListener("touchstart", stopAutoScroll);
-carousel.addEventListener("touchend", startAutoScroll);
+
+/* 📱 Mobile touch */
+carousel.addEventListener("touchstart", () => {
+  isUserInteracting = true;
+  stopAutoScroll();
+});
+
+carousel.addEventListener("touchend", () => {
+  setTimeout(() => {
+    isUserInteracting = false;
+    startAutoScroll();
+  }, 2500);
+});
+
 </script>
 
 
