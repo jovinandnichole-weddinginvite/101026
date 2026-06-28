@@ -2353,6 +2353,7 @@ body.reveal-content .invite {
     0 0 70px rgba(251,111,146,0.25);
 }
 .carousel {
+  scroll-padding-inline: 50%;
   scroll-behavior: smooth;
 
   /* ✅ Better natural inertia */
@@ -2411,11 +2412,10 @@ body {
 }
 .carousel {
   scroll-snap-type: x mandatory;
-  scroll-padding-inline: 0; /* ✅ keeps center aligned */
+
 }
 @media (max-width: 480px) {
   .carousel {
-    padding: 20px 0;                 /* ✅ remove side padding */
     scroll-padding-inline: 0;        /* ✅ fix snap centering */
     justify-content: center;         /* ✅ extra safe */
   }
@@ -2423,7 +2423,6 @@ body {
 
 @media (max-width: 480px) {
   .carousel {
-    padding: 20px 0;
     scroll-padding-inline: 0;
   }
 }
