@@ -3090,9 +3090,13 @@ checkBtn.addEventListener("click", () => {
   });
 </script>
 <script>
-window.addEventListener("load", async () => {
+document.addEventListener("click", async () => {
   try {
-    await audio.play();
+    await playAudio();
+  } catch(e) {
+    console.log(e);
+  }
+}, { once: true });
 
     isPlaying = true;
     playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
