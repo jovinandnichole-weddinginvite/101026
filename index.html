@@ -2529,14 +2529,11 @@ window.addEventListener('scroll', onScroll);
 
 
 
-<audio
-  id="bgMusic"
-  preload="auto"
-  playsinline
-  webkit-playsinline
-  loop>
-  music/wedding-song.mp3" type="audio/mpeg">
+<audio id="bgMusic" loop>
+  <source src="music/wedding-song.mp3" type="audio/mpeg">
+  Your browser does not support the audio element.
 </audio>
+
 
 
 <body>
@@ -3090,40 +3087,53 @@ checkBtn.addEventListener("click", () => {
 });
 </script>
 <script>
-  const submitBtn = document.getElementById("submitBtn");
-
-  submitBtn.addEventListener("click", e => {
-    const rect = submitBtn.getBoundingClientRect();
-    sparkleBurst(
-      rect.left + rect.width / 2,
-      rect.top + rect.height / 2
-    );
-  });
-</script>
-<script>
 let musicStarted = false;
 
-async function autoStartMusic() {
+async function startMusic() {
   if (musicStarted) return;
 
-  musicStarted = true;
-
   try {
-    await playAudio();
-  } catch (e) {
-    console.log(e);
-  }
+    musicStarted = true;
 
-  document.removeEventListener("click", autoStartMusic);
-  document.removeEventListener("touchstart", autoStartMusic);
-  document.removeEventListener("touchmove", autoStartMusic);
-  document.removeEventListener("scroll", autoStartMusic);
+    initAudio();
+
+    if (audioCtx && audioCtx.state === "suspended") {
+      await audioCtx.resume();
+    }
+
+    await audio.play();
+
+    isPlaying = true;
+    playBtn.innerHTML =
+      '<i class="fa-solid fa-pause"></i>';
+
+    draw();
+
+    // remove listeners once started
+    events.forEach(event =>
+      document.removeEventListener(event, startMusic)
+    );
+
+  } catch (err) {
+    console.log("Autoplay blocked:", err);
+    musicStarted = false;
+  }
 }
 
-document.addEventListener("click", autoStartMusic, { once: true });
-document.addEventListener("touchstart", autoStartMusic, { once: true });
-document.addEventListener("touchmove", autoStartMusic, { once: true });
-document.addEventListener("scroll", autoStartMusic, { once: true });
+const events = [
+  "click",
+  "touchstart",
+  "touchend",
+  "pointerdown",
+  "keydown"
+];
+
+events.forEach(event => {
+  document.addEventListener(event, startMusic, {
+    once: true,
+    passive: true
+  });
+});
 </script>
 
 </div>
