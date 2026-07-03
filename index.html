@@ -2533,7 +2533,14 @@ window.addEventListener('scroll', onScroll);
   <source src="music/wedding-song.mp3" type="audio/mpeg">
   Your browser does not support the audio element.
 </audio>
-
+<audio
+  id="bgMusic"
+  preload="auto"
+  playsinline
+  webkit-playsinline
+  loop>
+  music/wedding-song.mp3" type="audio/mpeg">
+</audio>
 
 
 <body>
@@ -2588,13 +2595,18 @@ function initAudio() {
 }
 
 /* ▶ PLAY */
-function playAudio() {
+async function playAudio() {
   initAudio();
-  audio.play();
-  audioCtx.resume();
-  isPlaying = true;
 
+  if (audioCtx.state === "suspended") {
+    await audioCtx.resume();
+  }
+
+  await audio.play();
+
+  isPlaying = true;
   playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+
   draw();
 }
 
@@ -2654,13 +2666,16 @@ progressContainer.addEventListener("click", e => {
 });
 
 /* ✅ AUTO PLAY FIX (mobile safe) */
-document.addEventListener("touchstart", () => {
-  if (!audioCtx) playAudio();
-}, { once: true });
+async function unlockAudio() {
+  try {
+    await playAudio();
+  } catch(err) {
+    console.log(err);
+  }
+}
 
-document.addEventListener("click", () => {
-  if (!audioCtx) playAudio();
-}, { once: true });
+document.addEventListener("touchstart", unlockAudio, { once: true });
+document.addEventListener("click", unlockAudio, { once: true });
 </script>
 
 
@@ -3089,30 +3104,7 @@ checkBtn.addEventListener("click", () => {
     );
   });
 </script>
-<script>
-document.addEventListener("click", async () => {
-  try {
-    await playAudio();
-  } catch(e) {
-    console.log(e);
-  }
-}, { once: true });
 
-    isPlaying = true;
-    playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-
-    initAudio();
-
-    if (audioCtx.state === "suspended") {
-      await audioCtx.resume();
-    }
-
-    draw();
-  } catch (err) {
-    console.log("Autoplay blocked by browser:", err);
-  }
-});
-</script>
 
 </div>
 
