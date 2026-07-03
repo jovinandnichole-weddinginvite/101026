@@ -3089,7 +3089,26 @@ checkBtn.addEventListener("click", () => {
     );
   });
 </script>
+<script>
+window.addEventListener("load", async () => {
+  try {
+    await audio.play();
 
+    isPlaying = true;
+    playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+
+    initAudio();
+
+    if (audioCtx.state === "suspended") {
+      await audioCtx.resume();
+    }
+
+    draw();
+  } catch (err) {
+    console.log("Autoplay blocked by browser:", err);
+  }
+});
+</script>
 
 </div>
 
