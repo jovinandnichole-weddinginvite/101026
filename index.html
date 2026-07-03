@@ -2384,7 +2384,115 @@ body,
 body * {
   color: #f5b2c3 !important;
 }
+/* 💌 Luxury Check Invitation Button */
+.check-btn {
+  position: relative;
+  overflow: hidden;
 
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px 20px;
+
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 18px;
+
+  background: rgba(255,255,255,0.08);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  color: #f5d0d6;
+  font-family: "Playfair Display", serif;
+  font-size: 15px;
+  font-weight: 500;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 20px rgba(0,0,0,0.15),
+    inset 0 1px 0 rgba(255,255,255,0.4);
+
+  transition: all 0.35s ease;
+}
+
+/* top luxury accent */
+.check-btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 20%;
+  width: 60%;
+  height: 1px;
+
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255,255,255,0.7),
+    transparent
+  );
+}
+
+/* shine animation */
+.check-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -80%;
+  width: 50%;
+  height: 100%;
+
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,0.6),
+    transparent
+  );
+
+  transform: skewX(-25deg);
+}
+
+.check-btn:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 12px 30px rgba(251,111,146,0.25),
+    0 0 18px rgba(251,111,146,0.35);
+}
+
+.check-btn:hover::before {
+  animation: checkShine 1s ease forwards;
+}
+
+.check-btn:active {
+  transform: scale(0.97);
+}
+
+.check-btn i {
+  margin-right: 8px;
+  color: #f5b2c3;
+}
+
+@keyframes checkShine {
+  to {
+    left: 130%;
+  }
+}
+
+/* subtle breathing glow */
+.check-btn {
+  animation: checkPulse 3.5s ease-in-out infinite;
+}
+
+@keyframes checkPulse {
+  0%,100% {
+    box-shadow:
+      0 8px 20px rgba(0,0,0,0.15),
+      0 0 0 rgba(251,111,146,0);
+  }
+  50% {
+    box-shadow:
+      0 12px 28px rgba(0,0,0,0.2),
+      0 0 16px rgba(251,111,146,0.25);
+  }
+}
 
 </style>
 </head>
@@ -2595,9 +2703,10 @@ document.addEventListener("click", () => {
     placeholder="Enter your Last Name, First Name to RSVP"
     style="text-align:center;"
   >
-  <button id="checkNameBtn" style="margin-top:8px;">
-    Check Invitation
-  </button>
+<button id="checkNameBtn" class="check-btn">
+  <i class="fa-solid fa-envelope-open-text"></i>
+  Check Invitation
+</button>
 
   <p id="nameStatus" style="font-size:13px; margin-top:8px;"></p>
 </div>
@@ -2812,7 +2921,7 @@ const guestList = {
   "Sy, Marlyn": 2,
   "Laygo, James": 2, 
   "Tiu, Maria Alioza": 2,
-  "Rubino, Emer": 2,
+  "Rubino, Emeriza": 2,
   "Cataya, Mylene": 2,
   "Dacalan, Maribel": 2, 
   "Rubino, Rowald": 1,
@@ -2838,7 +2947,7 @@ const guestList = {
   "Rubino, James Loyd": 1,
   "Garcia, Abegael": 1,
   "Agustin, Winzyl Mac": 1,
-  "Agustin, Wizyneth Audin": 1, 
+  "Agustin, Wizyneth Audin": 2, 
   "Rubino, Prime Carl Raven": 1,
   "Federico, Leo Lemuel": 1,
   "Agustin, Alona Mae": 1, 
@@ -2885,6 +2994,14 @@ const guestList = {
   "Monroy, Wilson": 1,
   "Cabanban, Nathaniel": 1,
   "Mangon, Kimberly Krisel": 2,
+  "Montano, Jan Ayette": 2,
+  "Sagun, Carlo Rafael": 2,
+  "Vera, Carlyn Mae": 2,
+  "Zapata, Charles Victor": 1,
+  "Dy, Angelica": 1,
+  "Martinez, Mary Ann": 1,
+  "Panaligan, Remmo": 1,
+  "Mangon, Kimberly Krisel": 2,
   "Andino, Alexander": 1
 };
 
@@ -2913,7 +3030,7 @@ checkBtn.addEventListener("click", () => {
 
   // ✅ FIND MATCH FIRST
   for (let name in guestList) {
-    if (normalize(name) === inputName) {
+    if (normalize(name).includes(inputName)) {
       matchName = name;
       break;
     }
@@ -2972,56 +3089,7 @@ checkBtn.addEventListener("click", () => {
     );
   });
 </script>
-<script>
-let wasPlayingBeforeHide = false;
 
-document.addEventListener("visibilitychange", async () => {
-  if (document.hidden) {
-    // Remember if music was playing
-    wasPlayingBeforeHide = !audio.paused;
-
-    if (wasPlayingBeforeHide) {
-      audio.pause();
-    }
-  } else {
-    // Resume only if it was playing before leaving
-    if (wasPlayingBeforeHide) {
-      try {
-        await audio.play();
-
-        if (audioCtx && audioCtx.state === "suspended") {
-          await audioCtx.resume();
-        }
-
-        isPlaying = true;
-        playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
-        draw();
-
-      } catch (err) {
-        console.log("Autoplay blocked:", err);
-      }
-    }
-  }
-});
-</script>
-<script>
-audio.addEventListener("timeupdate", () => {
-  localStorage.setItem("musicTime", audio.currentTime);
-});
-
-window.addEventListener("beforeunload", () => {
-  localStorage.setItem("musicTime", audio.currentTime);
-});
-</script>
-<script>
-window.addEventListener("load", () => {
-  const savedTime = localStorage.getItem("musicTime");
-
-  if (savedTime) {
-    audio.currentTime = parseFloat(savedTime);
-  }
-});
-</script>
 
 </div>
 
