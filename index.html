@@ -2972,7 +2972,56 @@ checkBtn.addEventListener("click", () => {
     );
   });
 </script>
+<script>
+let wasPlayingBeforeHide = false;
 
+document.addEventListener("visibilitychange", async () => {
+  if (document.hidden) {
+    // Remember if music was playing
+    wasPlayingBeforeHide = !audio.paused;
+
+    if (wasPlayingBeforeHide) {
+      audio.pause();
+    }
+  } else {
+    // Resume only if it was playing before leaving
+    if (wasPlayingBeforeHide) {
+      try {
+        await audio.play();
+
+        if (audioCtx && audioCtx.state === "suspended") {
+          await audioCtx.resume();
+        }
+
+        isPlaying = true;
+        playBtn.innerHTML = '<i class="fa-solid fa-pause"></i>';
+        draw();
+
+      } catch (err) {
+        console.log("Autoplay blocked:", err);
+      }
+    }
+  }
+});
+</script>
+<script>
+audio.addEventListener("timeupdate", () => {
+  localStorage.setItem("musicTime", audio.currentTime);
+});
+
+window.addEventListener("beforeunload", () => {
+  localStorage.setItem("musicTime", audio.currentTime);
+});
+</script>
+<script>
+window.addEventListener("load", () => {
+  const savedTime = localStorage.getItem("musicTime");
+
+  if (savedTime) {
+    audio.currentTime = parseFloat(savedTime);
+  }
+});
+</script>
 
 </div>
 
