@@ -2529,10 +2529,6 @@ window.addEventListener('scroll', onScroll);
 
 
 
-<audio id="bgMusic" loop>
-  <source src="music/wedding-song.mp3" type="audio/mpeg">
-  Your browser does not support the audio element.
-</audio>
 <audio
   id="bgMusic"
   preload="auto"
@@ -3002,7 +2998,7 @@ const guestList = {
   "Sy, Jessie Ryan": 1,
   "Pedrosa, Jester": 1,
   "Sibayan, John Christopher": 1,
-  "Arellano, Ron Allan": 1,
+  "Parchamento, Ron Allan": 1,
   "Dulay, Lynuel": 1,
   "Navarro Viel": 2,
   "Biscaro, Joyce": 2,
@@ -3104,7 +3100,31 @@ checkBtn.addEventListener("click", () => {
     );
   });
 </script>
+<script>
+let musicStarted = false;
 
+async function autoStartMusic() {
+  if (musicStarted) return;
+
+  musicStarted = true;
+
+  try {
+    await playAudio();
+  } catch (e) {
+    console.log(e);
+  }
+
+  document.removeEventListener("click", autoStartMusic);
+  document.removeEventListener("touchstart", autoStartMusic);
+  document.removeEventListener("touchmove", autoStartMusic);
+  document.removeEventListener("scroll", autoStartMusic);
+}
+
+document.addEventListener("click", autoStartMusic, { once: true });
+document.addEventListener("touchstart", autoStartMusic, { once: true });
+document.addEventListener("touchmove", autoStartMusic, { once: true });
+document.addEventListener("scroll", autoStartMusic, { once: true });
+</script>
 
 </div>
 
