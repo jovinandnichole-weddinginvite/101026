@@ -2841,8 +2841,19 @@ form.addEventListener("submit", async (e) => {
   form.innerHTML = responseMessage;
 });
 
-
 </script>
+
+
+<script>
+/* RSVP CLOSE DATE: August 25, 2026 */
+const RSVP_DEADLINE = new Date("2026-08-25T00:00:00");
+
+function isRSVPClosed() {
+  return new Date() >= RSVP_DEADLINE;
+}
+</script>
+
+
 
 <script>
   const guestsSelect = document.getElementById("guests");
@@ -2956,7 +2967,7 @@ const guestList = {
   "Pedro, Marivic": 2, 
   "Biri, Rodrigo": 2,
   "Rubino, James Loyd": 1,
-  "Garcia, Abegael": 1,
+  "Garcia, Abegael": 2,
   "Agustin, Winzyl Mac": 1,
   "Agustin, Wizyneth Audin": 2, 
   "Rubino, Prime Carl Raven": 1,
@@ -3010,6 +3021,7 @@ const guestList = {
   "Sagun, Carlo Rafael": 2,
   "Vera, Carlyn Mae": 2,
   "Zapata, Charles Victor": 1,
+  "Villareal, Laurence": 1,
   "Dy, Angelica": 1,
   "Martinez, Mary Ann": 1,
   "Panaligan, Remmo": 1,
@@ -3033,6 +3045,18 @@ function normalize(text) {
 
 /* ✅ CHECK NAME */
 checkBtn.addEventListener("click", () => {
+
+  // ✅ RSVP closed check
+  if (isRSVPClosed()) {
+    statusText.innerHTML = `
+      ❌ RSVP submissions are now closed.<br>
+      Thank you for your interest. Please contact the couple directly for any concerns.
+    `;
+    statusText.style.color = "#ffb3b3";
+    rsvpForm.style.display = "none";
+    return;
+  }
+
   const inputName = normalize(searchInput.value);
 
   if (!inputName) {
@@ -3090,6 +3114,28 @@ checkBtn.addEventListener("click", () => {
     statusText.innerHTML = "❌ Sorry, your name is not on the guest list.";
     statusText.style.color = "#ffb3b3";
     rsvpForm.style.display = "none";
+  }
+});
+</script>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  if (!isRSVPClosed()) return;
+
+  const form = document.getElementById("rsvpForm");
+  const checkBtn = document.getElementById("checkNameBtn");
+  const searchInput = document.getElementById("guestSearch");
+  const statusText = document.getElementById("nameStatus");
+
+  if (searchInput) searchInput.disabled = true;
+  if (checkBtn) checkBtn.disabled = true;
+
+  statusText.innerHTML = `
+    ❌ RSVP submissions closed on August 25, 2026.<br>Thank you for your love and support.<br>Please contact Jovin or Nichole directly for any updates.
+  `;
+  statusText.style.color = "#ffb3b3";
+
+  if (form) {
+    form.style.display = "none";
   }
 });
 </script>
